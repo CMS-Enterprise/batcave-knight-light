@@ -1,0 +1,6 @@
+.buttonstyle {
+    position:relative;
+    white-space: nowrap;
+    min-width: auto;
+    margin-top: -8rem !important;
+}

@@ -1,0 +1,75 @@
+image: artifactory.cloud.cms.gov/docker/maven:3.8.4-openjdk-11
+
+variables:
+  ARTIFACT_FOLDER: artifacts
+  TEMPLATE_VERSION: main
+
+stages:
+  - build
+  - test
+  - sast
+  - delivery
+  - deploy
+
+build:
+  stage: build
+  allow_failure: false
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .m2/repository
+  artifacts:
+    expire_in: 1 day      
+    paths:
+      - target/
+  script:
+    - echo "PIPELINE_DEFAULT_IMAGE - ${PIPELINE_DEFAULT_IMAGE}"
+    - mvn -version
+    - mvn package -P prod -DskipTests=true
+  
+deploy:
+  # image: artifactory.cloud.cms.gov/docker/alpine:3.18
+  stage: build
+  # needs: [build]
+  script:
+    - ls
+    - mvn deploy -s settings.xml
+
+sast-pipeline:
+  stage: sast
+  needs: []
+  variables:
+    SCAN_GITLEAKS: "true"
+    SCAN_SEMGREP: "true"
+    SEMGREP_RULES_ADD: "p/golang"
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "sast.yaml"
+
+delivery-pipeline:
+  stage: delivery
+  needs: [ "sast-pipeline" ]
+  variables:
+    FETCH_CI_ARTIFACTS: "true"
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "delivery.yaml"
+
+deployment-pipeline:
+  stage: deploy
+  needs: [ "delivery-pipeline" ]
+  when: always
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "deployment.yaml"

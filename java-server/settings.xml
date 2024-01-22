@@ -1,0 +1,14 @@
+<settings>
+    <servers>
+        <server>
+            <id>central</id>
+            <username>${env.BC_QMMS_ARTIFACTORY_USERNAME}</username>
+            <password>${env.BC_QMMS_ARTIFACTORY_PASSWORD}</password>
+        </server>
+        <server>
+            <id>snapshots</id>
+            <username>${env.BC_QMMS_ARTIFACTORY_USERNAME}</username>
+            <password>${env.BC_QMMS_ARTIFACTORY_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>

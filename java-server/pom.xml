@@ -1,0 +1,124 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.7.0</version>
+		<relativePath/>
+	</parent>
+	<groupId>com.knightlight</groupId>
+	<artifactId>knightlight-java</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>knightlight-java</name>
+	<description>Knightlight java server</description>
+
+	<properties>
+		<java.version>11</java.version>
+		<spring.boot.version>3.1.2</spring.boot.version>
+		<jacoco.version>0.8.8</jacoco.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>${spring.boot.version}</version>
+		</dependency>
+
+		<!-- <dependency>
+            <groupId>com.knightlight</groupId>
+            <artifactId>knightlight-java</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency> -->
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<configuration>
+					<excludes>
+						<exclude>com/knightlight/KnightlightJavaApplication.class</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>generate-code-coverage-report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+	  	<repository>
+		  <id>artifactory</id>
+		  <url>https://artifactory.cloud.cms.gov/artifactory/batcave-maven-qmms</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>artifactory-jfrog-artifactory-artifactory-ha-member-1-releases</name>
+			<url>https://artifactory.cloud.cms.gov/artifactory/batcaveqmms-maven</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>artifactory-jfrog-artifactory-artifactory-ha-member-1-snapshots</name>
+			<url>https://artifactory.cloud.cms.gov/artifactory/batcaveqmms-maven</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>
+
+	<!-- <distributionManagement>
+		<repository>
+			<id>release</id>
+			<name>artifactory-jfrog-artifactory-artifactory-ha-member-0-releases</name>
+			<url>https://artifactory.cloud.cms.gov/artifactory/batcave-maven-qmms</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshot</id>
+			<name>artifactory-jfrog-artifactory-artifactory-ha-member-0-snapshots</name>
+			<url>https://artifactory.cloud.cms.gov/artifactory/batcave-maven-qmms</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+<distributionManagement>
+    <repository>
+        <id>central</id>
+        <name>artifactory-jfrog-artifactory-artifactory-ha-member-0-releases</name>
+        <url>https://artifactory.cloud.cms.gov/artifactory/batcaveqmm-maven</url>
+    </repository>
+    <snapshotRepository>
+        <id>snapshots</id>
+        <name>artifactory-jfrog-artifactory-artifactory-ha-member-0-snapshots</name>
+        <url>https://artifactory.cloud.cms.gov/artifactory/batcaveqmm-maven</url>
+    </snapshotRepository>
+</distributionManagement> -->

@@ -1,0 +1,43 @@
+variables:
+  APP_IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
+  APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}
+  APP_IMAGE: ${APP_IMAGE_SRC}:${APP_IMAGE_TAG}
+  ARTIFACT_FOLDER: ".artifacts"
+  TARGET_DOCKERFILE: "Dockerfile"
+  TARGET_BUILD_DIR: "."
+  IMAGE_TARBALL: ${ARTIFACT_FOLDER}/build-image/${CI_PROJECT_NAME}-${CI_COMMIT_SHORT_SHA}.tar
+
+# build-kaniko:
+#   image:
+#     name: gcr.io/kaniko-project/executor:v1.13.0-debug
+#     entrypoint: [ "" ]
+#   script:
+#     - mkdir -p ~/kaniko/.docker
+#     - mkdir -p ${ARTIFACT_FOLDER}/build-image
+#     - echo $BC_ARTIFACTORY_AUTH_JSON >> ~/kaniko/.docker/config.json
+#     - ls -lah
+#     - /kaniko/executor --context ${TARGET_BUILD_DIR} --tar-path ${IMAGE_TARBALL} --no-push --destination=${APP_IMAGE} --dockerfile ${TARGET_DOCKERFILE}
+
+# build-podman:
+#   image: artifactory.cloud.cms.gov/batcave-docker/devops-pipelines/pipeline-tools/podman:v4.4.1
+#   script:
+#     - mkdir ~/.docker && echo $BC_ARTIFACTORY_AUTH_JSON >> ~/.docker/config.json
+#     - podman version
+#     # Check for a specific dockerfile before defaulting to just 'Dockerfile'
+#     - mkdir -p "${ARTIFACT_FOLDER}/build-image"
+#     - echo "Build Image using -> ${TARGET_DOCKERFILE} context -> ${TARGET_BUILD_DIR}"
+#     - echo "Building ${APP_IMAGE}"
+#     - podman build -t ${APP_IMAGE} --file ${TARGET_DOCKERFILE} --squash-all ${TARGET_BUILD_DIR}
+#     - podman save -o $IMAGE_TARBALL $APP_IMAGE
+
+build-buildah:
+  image: artifactory.cloud.cms.gov/batcave-docker/temp/buildah:v1.31.0_2
+  script:
+    - mkdir ~/.docker && echo $BC_ARTIFACTORY_AUTH_JSON >> ~/.docker/config.json
+    - buildah version
+    - mkdir -p "${ARTIFACT_FOLDER}/build-image"
+    - echo "Build Image using -> ${TARGET_DOCKERFILE} context -> ${TARGET_BUILD_DIR}"
+    - cat /etc/containers/storage.conf
+    - buildah info --debug
+    - whoami
+    # - buildah unshare build -t ${APP_IMAGE} --file ${TARGET_DOCKERFILE} --squash -o type=tar,dest=${IMAGE_TARBALL} ${TARGET_BUILD_DIR}

@@ -1,0 +1,7 @@
+.citystyle {
+    overflow: hidden ;
+    min-width: 320px;
+    background-image: url(../../public/city.png);
+    background-repeat: repeat-x;
+    height: 390px;
+}
