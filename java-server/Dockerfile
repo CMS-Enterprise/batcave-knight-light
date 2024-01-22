@@ -1,4 +1,4 @@
-FROM artifactory.cloud.cms.gov/docker/alpine:3.18
+FROM artifactory.cloud.cms.gov/docker/alpine:3.19
 WORKDIR /app
 COPY . /app/
 EXPOSE 8080
