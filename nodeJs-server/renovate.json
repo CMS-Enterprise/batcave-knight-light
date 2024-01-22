@@ -1,0 +1,28 @@
+{
+  "separateMajorMinor": false,
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["*"],
+      "groupName": "alpine image in dockerfile",
+      "groupSlug": "docker",
+      "enabled": true
+    },
+    {
+      "matchManagers": ["nodenv", "npm"],
+      "groupName": "nodenv and npm dependencies",
+      "groupSlug": "node",
+      "enabled": false
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^Dockerfile$"],
+      "matchStrings": [
+        "FROM artifactory.cloud.cms.gov/docker/alpine:(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "registry.hub.docker.com/library/alpine",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?$"
+    }
+  ]
+}

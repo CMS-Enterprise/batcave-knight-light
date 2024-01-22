@@ -1,0 +1,28 @@
+{
+  "separateMajorMinor": false,
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["*"],
+      "groupName": "docker dependencies",
+      "groupSlug": "docker",
+      "enabled": true
+    },
+    {
+      "matchManagers": ["npm"],
+      "groupName": "npm",
+      "groupSlug": "npm",
+      "enabled": false
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": ["^Dockerfile$"],
+      "matchStrings": [
+        "artifactory.cloud.cms.gov/docker/node:(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "registry.hub.docker.com/library/node",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?\\-(?<compatibility>alpine)(?<extractVersion>(\\d+)?(\\.\\d+)?(\\.\\d+)?$)"
+    }
+  ]
+}

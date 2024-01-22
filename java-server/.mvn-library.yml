@@ -1,0 +1,10 @@
+variables:
+  TEMPLATE_VERSION: "main"
+
+ci-pipeline:
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "ci/maven.yaml" 

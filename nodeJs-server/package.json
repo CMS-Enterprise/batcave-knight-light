@@ -1,0 +1,24 @@
+{
+  "name": "knight-light-server-nodejs",
+  "version": "1.0.0",
+  "description": "knightlight server written in nodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test:unit": "jest --coverage",
+    "lint": "eslint *.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://code.batcave.internal.cms.gov/ado-repositories/nightwing/knight-light/knight-light-server-nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "jest": "^28.1.3",
+    "supertest": "^6.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.21.0"
+  }
+}
