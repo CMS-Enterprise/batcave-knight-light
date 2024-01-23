@@ -39,4 +39,4 @@ jobs:
       - name: Test with Node
         run: |
           cd nodeJs-server
-          npm run test
+          npm run test:unit
