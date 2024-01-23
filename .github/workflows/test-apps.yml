@@ -15,4 +15,4 @@ jobs:
       - name: Test using Maven and Jacoco
         run: |
           cd java-server
-          mvn jacoco:report
+          mvn clean test
