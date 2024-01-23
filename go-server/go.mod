@@ -1,4 +1,4 @@
-module code.batcave.internal.cms.gov/ado-repositories/nightwing/knight-light/knight-light-server
+module knight-light
 
 go 1.20
 
