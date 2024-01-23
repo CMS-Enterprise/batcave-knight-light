@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"/api"
+	"github.com/CMS-Enterprise/batcave-knight-light/tree/main/go-server/api"
 )
 
 func main() {
