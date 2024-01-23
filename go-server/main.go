@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/CMS-Enterprise/batcave-knight-light/tree/addWorkflows/go-server/api"
+	"knight-light/api"
 )
 
 func main() {
