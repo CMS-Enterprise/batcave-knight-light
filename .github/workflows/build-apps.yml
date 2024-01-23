@@ -9,7 +9,7 @@ jobs:
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          java-vrsion: '11'
+          java-version: '11'
           distribution: 'corretto'
           cache: maven
       - name: Build with Maven
