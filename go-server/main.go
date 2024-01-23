@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"code.batcave.internal.cms.gov/ado-repositories/nightwing/knight-light/knight-light-server/api"
+	"batcave-knight-light/go-server/api"
 )
 
 func main() {
