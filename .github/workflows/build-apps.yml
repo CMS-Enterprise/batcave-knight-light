@@ -5,4 +5,4 @@ jobs:
   Build-Maven:
     runs-on: ubuntu-latest
     steps:
-      -run: echo "Job was triggered by ${{ github.event_name }} event."
+      - run: echo "Job was triggered by ${{ github.event_name }} event."
