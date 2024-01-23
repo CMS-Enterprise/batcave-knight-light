@@ -1,0 +1,68 @@
+variables:
+  TEMPLATE_VERSION: "main"
+  TARGET_ENVIRONMENT: "impl"
+  FETCH_SAST_ARTIFACTS: "true"
+
+# .docker:
+#   image: golang:1.20-alpine
+#   services:
+#     - artifactory.cloud.cms.gov/docker/docker:${DOCKER_VERSION}-dind
+#   variables:
+#     DOCKER_HOST: tcp://docker:2376
+#     DOCKER_TLS_VERIFY: '1'
+#     DOCKER_TLS_CERTDIR: '/certs'
+#     DOCKER_CERT_PATH: '/certs/client'
+#     DOCKER_DRIVER: overlay2
+#     DOCKER_VERSION: '20.10.16'
+
+# build:
+#   image: artifactory.cloud.cms.gov/batcave-docker/nightwing/podman-workflow-engine:v0.0.0
+#   script:
+#     - dagger run --debug workflow-engine debug-pipeline
+
+# workflow-engine-build:
+#   image: artifactory.cloud.cms.gov/batcave-docker/nightwing/podman-workflow-engine:v0.0.0
+#   needs: []
+#   script:
+#     - mkdir ~/.docker && echo $BC_ARTIFACTORY_AUTH_JSON >> ~/.docker/config.json
+#     - dagger run --debug workflow-engine debug-pipeline
+
+ci-pipeline:
+  needs: []
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "ci/go.yaml"
+
+sast-pipeline:
+  needs: []
+  variables:
+    SCAN_GITLEAKS: "true"
+    SCAN_SEMGREP: "true"
+    SEMGREP_RULES_ADD: "p/golang"
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "sast.yaml"
+
+delivery-pipeline:
+  needs: [ "sast-pipeline" ]
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "delivery.yaml"
+
+deployment-pipeline:
+  needs: [ "delivery-pipeline" ]
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "deployment.yaml"
