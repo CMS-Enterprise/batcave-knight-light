@@ -41,7 +41,7 @@ jobs:
         run: |
           cd nodeJs-server
           npm ci
-Build-UI:
+  Build-UI:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
