@@ -1,0 +1,8 @@
+name: Build Apps
+run-name: Building each server and UI
+on: [push]
+jobs:
+  Build-Maven:
+    runs-on: ubuntu-latest
+    steps:
+      -run: echo "Job was triggered by ${{ github.event_name }} event."
