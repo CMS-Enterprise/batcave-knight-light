@@ -49,6 +49,4 @@ class MockApi {
 //   : axios.create({
 //       baseURL: 'https://knight-light.batcave-impl.internal.cms.gov/',
 //     });
-export default axios.create({
-  baseURL: 'https://knight-light.batcave-impl.internal.cms.gov/',
-});
+export default new MockApi();
