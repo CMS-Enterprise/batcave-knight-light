@@ -27,7 +27,7 @@ jobs:
       - name: Test with Go
         run: |
           cd go-server
-          go test ./... -v -short        
+          go test ./... -v -short
   Test-Node:
     runs-on: ubuntu-latest
     steps:
@@ -48,7 +48,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-versino: '3.x'
+          python-version: '3.x'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
