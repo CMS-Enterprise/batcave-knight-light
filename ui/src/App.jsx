@@ -1,4 +1,4 @@
-import './App.css'
+import './App.css';
 import { Row, Col, Card, Container } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CitySilhouette from './footer/CitySilhouette';
@@ -17,53 +17,65 @@ function App() {
   const [goStatus, setGoStatus] = useState([]);
   const [nodeStatus, setNodeStatus] = useState([]);
   const [pythonStatus, setPythonStatus] = useState([]);
-  
+
   return (
     <>
-    <div className="content">
-      <Row className="mb-15">
-        <Col>
-          <Card className="bg-transparent">
-          <img src="public/nightwing.png" alt="Nightwing Logo Banner" />
-          </Card>
-         </Col>
-      </Row>
-      <Row className="mb-0">
-        <Col xs="3">
-          <JavaLight javaStatus={javaStatus} setJavaStatus={setJavaStatus} />
-        </Col>
-        <Col xs="3">
-          <NodeLight nodeStatus={nodeStatus} setNodeStatus={setNodeStatus} />
-        </Col>
-        <Col xs="3">
-          <PythonLight pythonStatus={pythonStatus} setPythonStatus={setPythonStatus} />
-        </Col>
-        <Col xs="3">
-          <GoLight goStatus={goStatus} setGoStatus={setGoStatus} />
-        </Col>
-      </Row>
-      <Row className="mt-n14">
-        <Col >
+      <div data-testid="myapp" className="content">
+        <Row className="mb-15">
+          <Col>
+            <Card className="bg-transparent">
+              <img src="public/nightwing.png" alt="Nightwing Logo Banner" />
+            </Card>
+          </Col>
+        </Row>
+        <Row className="mb-0">
+          <Col xs="3">
+            <JavaLight javaStatus={javaStatus} setJavaStatus={setJavaStatus} />
+          </Col>
+          <Col xs="3">
+            <NodeLight nodeStatus={nodeStatus} setNodeStatus={setNodeStatus} />
+          </Col>
+          <Col xs="3">
+            <PythonLight
+              pythonStatus={pythonStatus}
+              setPythonStatus={setPythonStatus}
+            />
+          </Col>
+          <Col xs="3">
+            <GoLight goStatus={goStatus} setGoStatus={setGoStatus} />
+          </Col>
+        </Row>
+        <Row className="mt-n14">
+          <Col>
             <CitySilhouette />
-        </Col>
-      </Row>
-      <Row className="buttons">
-        <Col xs="3">
-          <JavaSignalButton javaStatus={javaStatus} setJavaStatus={setJavaStatus}/>
-        </Col>
-        <Col xs="3">
-          <NodeSignalButton nodeStatus={nodeStatus} setNodeStatus={setNodeStatus} />
-        </Col>
-        <Col xs="3">
-          <PythonSignalButton pythonStatus={pythonStatus} setPythonStatus={setPythonStatus} />
-        </Col>
-        <Col xs="3">
-          <GoSignalButton goStatus={goStatus} setGoStatus={setGoStatus} />
-        </Col>
-      </Row>
-    </div>
-</>
-  )
+          </Col>
+        </Row>
+        <Row className="buttons">
+          <Col xs="3">
+            <JavaSignalButton
+              javaStatus={javaStatus}
+              setJavaStatus={setJavaStatus}
+            />
+          </Col>
+          <Col xs="3">
+            <NodeSignalButton
+              nodeStatus={nodeStatus}
+              setNodeStatus={setNodeStatus}
+            />
+          </Col>
+          <Col xs="3">
+            <PythonSignalButton
+              pythonStatus={pythonStatus}
+              setPythonStatus={setPythonStatus}
+            />
+          </Col>
+          <Col xs="3">
+            <GoSignalButton goStatus={goStatus} setGoStatus={setGoStatus} />
+          </Col>
+        </Row>
+      </div>
+    </>
+  );
 }
 
-export default App
+export default App;
