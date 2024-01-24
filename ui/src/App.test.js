@@ -11,7 +11,7 @@ describe('App', () => {
     });
   });
 
-  xtest('renders app content', async () => {
+  test('renders app content', async () => {
     let ummountFunction;
     await act(async () => {
       const { unmount } = render(<App />);
