@@ -1,4 +1,4 @@
-FROM artifactory.cloud.cms.gov/docker/alpine:3.18.5
+FROM alpine:3.18.5
 WORKDIR /app
 COPY . /app/
 EXPOSE 3000

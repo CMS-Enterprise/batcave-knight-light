@@ -1,4 +1,4 @@
-FROM artifactory.cloud.cms.gov/docker/alpine:3.19 as build
+FROM alpine:3.19 as build
 WORKDIR /app
 COPY . /app/
 
@@ -7,7 +7,7 @@ RUN apk add maven
 
 RUN mvn clean install
 
-FROM  artifactory.cloud.cms.gov/docker/amazoncorretto:21.0.2-alpine3.19
+FROM amazoncorretto:21.0.2-alpine3.19
 
 WORKDIR /app
 

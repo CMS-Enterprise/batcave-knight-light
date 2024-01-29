@@ -1,4 +1,4 @@
-FROM artifactory.cloud.cms.gov/docker/node:20-alpine3.18
+FROM node:20-alpine3.18
 
 COPY . /app
 WORKDIR /app
