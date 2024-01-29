@@ -1,4 +1,4 @@
-FROM artifactory.cloud.cms.gov/docker/python:3.11-alpine
+FROM python:3.11-alpine
 
 RUN addgroup -S server && adduser -S server -G server
 
