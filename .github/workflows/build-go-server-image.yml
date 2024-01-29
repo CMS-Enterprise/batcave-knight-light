@@ -1,0 +1,13 @@
+name: Build Knight-Light Go Server
+on: [push]
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/build-image@wip-build-image-action
+        with:
+          path: ./go-server/
+          # TODO: the dockerfile path should be relative to the context path
+          dockerfile: ./go-server/Dockerfile
+          image_tag: testing
