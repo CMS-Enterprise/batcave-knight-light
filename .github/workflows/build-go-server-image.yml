@@ -1,5 +1,5 @@
 name: Build Knight-Light Go Server
-on: [push]
+on: [push, workflow_dispatch]
 jobs:
   build-image:
     runs-on: ubuntu-latest
