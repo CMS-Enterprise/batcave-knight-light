@@ -10,4 +10,6 @@ jobs:
           path: ./go-server/
           # TODO: the dockerfile path should be relative to the context path
           dockerfile: ./go-server/Dockerfile
-          image_tag: testing
+          # TODO: add support for mixed case to workflow-engine (i.e. we should force container image tags to lowercase)
+          image_tag: cms-enterprise/batcave/knight-light-go-server:testing
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
