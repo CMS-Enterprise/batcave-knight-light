@@ -1,4 +1,4 @@
-module knight-light
+module knight-light-server
 
 go 1.20
 
