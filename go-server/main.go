@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"knight-light/api"
+	"knight-light-server/api"
 )
 
 func main() {
