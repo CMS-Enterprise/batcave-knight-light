@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       # TODO combine all delivery jobs into a single action
       - name: Build container image
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@wip-build-image-action
+        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@feat/github-actions
         with:
           path: ./nodeJs-server/
           # TODO: the dockerfile path should be relative to the context path
@@ -43,7 +43,7 @@ jobs:
           image_tag: cms-enterprise/batcave/knight-light-node-server:testing
           repo_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Scan container image
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@wip-build-image-action
+        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@feat/github-actions
         with:
           image_tag: cms-enterprise/batcave/knight-light-node-server:testing
           output_dir: ./artifacts
