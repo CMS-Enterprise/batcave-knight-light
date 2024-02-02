@@ -1,34 +1,28 @@
-name: Build Knight-Light Go Server
-run-name: "Build Knight-Light Go Server: ${{ github.event.head_commit.message }}"
+name: Build Knight-Light Python Server
+run-name: "Build Knight-Light Python Server: ${{ github.event.head_commit.message }}"
 on: [push, workflow_dispatch]
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Go 1.21.4
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21.4'
-      - name: Build with Go
-        run: |
-          cd go-server
-          go mod tidy
-          go build
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Go 1.21.4
-        uses: actions/setup-go@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          go-version: '1.21.4'
-      - name: Test with Go
+          python-version: '3.x'
+      - name: Install dependencies
         run: |
-          cd go-server
-          go test ./... -v -short
+          python -m pip install --upgrade pip
+      - name: Test with python
+        run: |
+          cd python-server
+          pip install -r requirements.txt
+          python -m coverage --version
+          python -m coverage run -m pytest
+          python -m coverage report
+          python -m coverage xml
   delivery:
-    needs: [build, test]
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,16 +30,16 @@ jobs:
       - name: Build container image
         uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@wip-build-image-action
         with:
-          path: ./go-server/
+          path: ./python-server/
           # TODO: the dockerfile path should be relative to the context path
-          dockerfile: ./go-server/Dockerfile
+          dockerfile: ./python-server/Dockerfile
           # TODO: add support for mixed case to workflow-engine (i.e. we should force container image tags to lowercase)
-          image_tag: cms-enterprise/batcave/knight-light-go-server:testing
+          image_tag: cms-enterprise/batcave/knight-light-python-server:testing
           repo_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Scan container image
         uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@wip-build-image-action
         with:
-          image_tag: cms-enterprise/batcave/knight-light-go-server:testing
+          image_tag: cms-enterprise/batcave/knight-light-python-server:testing
           output_dir: ./artifacts
           repo_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Archive image scan outputs
