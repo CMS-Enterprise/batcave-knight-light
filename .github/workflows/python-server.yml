@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       # TODO combine all delivery jobs into a single action
       - name: Build container image
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@feat/github-actions
+        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@main
         with:
           path: ./python-server/
           # TODO: the dockerfile path should be relative to the context path
@@ -37,7 +37,7 @@ jobs:
           image_tag: cms-enterprise/batcave/knight-light-python-server:testing
           repo_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Scan container image
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@feat/github-actions
+        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@main
         with:
           image_tag: cms-enterprise/batcave/knight-light-python-server:testing
           output_dir: ./artifacts
