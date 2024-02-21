@@ -2,10 +2,8 @@ name: Build Knight-Light Java Server
 run-name: "Build Knight-Light Java Server: ${{ github.event.head_commit.message }}"
 on: [push, workflow_dispatch]
 
-inputs:
-  workflow_engine_version:
-    description: "The version of workflow-engine to use (note: different versions of the workflow-engine image may not be compatible with this version of the GitHub action)."
-    default: "v0.0.1-rc.4"
+env:
+  WORKFLOW_ENGINE_VERSION: v0.0.1-rc.4
 
 jobs:
   build:
@@ -72,7 +70,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - shell: bash
-        run: docker pull ghcr.io/cms-enterprise/batcave/workflow-engine:${{ inputs.workflow_engine_version }}
+        run: docker pull ghcr.io/cms-enterprise/batcave/workflow-engine:
       - shell: bash
         run: |-
           docker run --workdir /github/workspace -e HOME -e CI=true \
@@ -80,6 +78,6 @@ jobs:
             -v "$HOME":"/github/home" \
             -v "$(pwd)":"/github/workspace" \
             -v "$(readlink -f ${{ inputs.output_dir }})":"/github/output" \
-            ghcr.io/cms-enterprise/batcave/workflow-engine:${{ inputs.workflow_engine_version }} \
+            ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION \
             run code-scan \
             --semgrep-experimental 
