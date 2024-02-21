@@ -4,6 +4,7 @@ on: [push, workflow_dispatch]
 
 env:
   WORKFLOW_ENGINE_VERSION: v0.0.1-rc.4
+  OUTPUT_DIR: ./artifacts
 
 jobs:
   build:
@@ -77,7 +78,7 @@ jobs:
             -v "/var/run/docker.sock":"/var/run/docker.sock" \
             -v "$HOME":"/github/home" \
             -v "$(pwd)":"/github/workspace" \
-            -v "$(readlink -f ${{ inputs.output_dir }})":"/github/output" \
+            -v "$(readlink -f $OUTPUT_DIR)":"/github/output" \
             ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION \
             run code-scan \
             --semgrep-experimental 
