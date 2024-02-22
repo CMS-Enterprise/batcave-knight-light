@@ -132,3 +132,29 @@ jobs:
           cd java-server
           docker image ls
           workflow-engine run image-scan --scan-image-target java-server-image
+
+  image-publish:
+    runs-on: ubuntu-latest
+    needs: [set-version, image-build, image-scan]
+    container:
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.set-version.outputs.WORKFLOW_ENGINE_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      # - uses: docker/login-action@v3
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ github.token }}
+      # - name: Download artifact
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: myimage
+      #     path: /tmp
+      # - name: Load image
+      #   run: |
+      #     docker load --input /tmp/myimage.tar
+      #     docker image ls -a          
+      - shell: sh
+        run: |-
+          cd java-server
+          workflow-engine run image-publish
