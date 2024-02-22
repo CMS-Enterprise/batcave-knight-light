@@ -66,16 +66,16 @@ jobs:
   sast-scan:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:v0.0.1-rc.4
     steps:
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: docker/login-action@v3
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
-      - shell: bash
-        run: docker pull ghcr.io/cms-enterprise/batcave/workflow-engine:v0.0.1-rc.4
+      # - shell: bash
+      #   run: docker pull ghcr.io/cms-enterprise/batcave/workflow-engine:v0.0.1-rc.4
       # - shell: bash
       #   run: |-
       #     git config --global --add safe.directory $GITHUB_WORKSPACE/java-server
