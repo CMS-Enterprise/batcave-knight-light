@@ -92,5 +92,6 @@ jobs:
       #       --semgrep-experimental 
       - shell: sh
         run: |-
+          git config --global --add safe.directory /__w/batcave-knight-light/batcave-knight-light
           cd java-server
           workflow-engine run code-scan --semgrep-experimental
