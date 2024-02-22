@@ -157,4 +157,6 @@ jobs:
       - shell: sh
         run: |-
           cd java-server
+          ls -a
+          ls -a .artifacts
           workflow-engine run image-publish
