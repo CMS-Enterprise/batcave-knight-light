@@ -5,6 +5,7 @@ on: [push, workflow_dispatch]
 env:
   WORKFLOW_ENGINE_VERSION: v0.0.1-rc.4
   OUTPUT_DIR: ./artifacts
+  WORKING_DIR: $GITHUB_WORKSPACE/java-server
 
 jobs:
   build:
@@ -75,14 +76,13 @@ jobs:
         run: docker pull ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION
       - shell: bash
         run: |-
-          cd $GITHUB_WORKSPACE/java-server
-          ls
+          git config --global --add safe.directory $WORKING_DIR
       - shell: bash
         run: |-
-          docker run --workdir $GITHUB_WORKSPACE/java-server -e HOME -e CI=true \
+          docker run --workdir $WORKING_DIR -e HOME -e CI=true \
             -v "/var/run/docker.sock":"/var/run/docker.sock" \
             -v "$HOME":"/github/home" \
-            -v "$(pwd)":$GITHUB_WORKSPACE/java-server \
+            -v "$(pwd)": $WORKING_DIR \
             -v "$(readlink -f $OUTPUT_DIR)":"/github/output" \
             ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION \
             run code-scan \
