@@ -8,20 +8,20 @@ env:
   WORKING_DIR: $GITHUB_WORKSPACE/java-server
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'corretto'
-          cache: maven
-      - name: Build with Maven
-        run: |
-          cd java-server
-          mvn clean install
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up JDK 11
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: '11'
+  #         distribution: 'corretto'
+  #         cache: maven
+  #     - name: Build with Maven
+  #       run: |
+  #         cd java-server
+  #         mvn clean install
   test:
     runs-on: ubuntu-latest
     steps:
@@ -36,33 +36,33 @@ jobs:
         run: |
           cd java-server
           mvn clean test
-  delivery:
-    needs: [build, test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      # TODO combine all delivery jobs into a single action
-      - name: Build container image
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@main
-        with:
-          path: ./java-server/
-          # TODO: the dockerfile path should be relative to the context path
-          dockerfile: ./java-server/Dockerfile
-          # TODO: add support for mixed case to workflow-engine (i.e. we should force container image tags to lowercase)
-          image_tag: cms-enterprise/batcave/knight-light-java-server:testing
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Scan container image
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@main
-        with:
-          image_tag: cms-enterprise/batcave/knight-light-java-server:testing
-          output_dir: ./artifacts
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Archive image scan outputs
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-scan-results
-          path: ./artifacts/*.json
-          if-no-files-found: error
+  # delivery:
+  #   needs: [build, test]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     # TODO combine all delivery jobs into a single action
+  #     - name: Build container image
+  #       uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@main
+  #       with:
+  #         path: ./java-server/
+  #         # TODO: the dockerfile path should be relative to the context path
+  #         dockerfile: ./java-server/Dockerfile
+  #         # TODO: add support for mixed case to workflow-engine (i.e. we should force container image tags to lowercase)
+  #         image_tag: cms-enterprise/batcave/knight-light-java-server:testing
+  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Scan container image
+  #       uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@main
+  #       with:
+  #         image_tag: cms-enterprise/batcave/knight-light-java-server:testing
+  #         output_dir: ./artifacts
+  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Archive image scan outputs
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: image-scan-results
+  #         path: ./artifacts/*.json
+  #         if-no-files-found: error
   sast-scan:
     runs-on: ubuntu-latest
     container:
@@ -89,14 +89,6 @@ jobs:
           docker save --output /tmp/myimage.tar java-server-image
           ls -a
           ls -a /tmp
-      # - name: Set up Docker Buildx
-      #   uses: docker/setup-buildx-action@v3
-      # - name: Build and export
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: ./java-server
-      #     tags: java-server-image
-      #     outputs: type=docker,dest=/tmp/myimage.tar
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
