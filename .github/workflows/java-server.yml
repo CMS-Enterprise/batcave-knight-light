@@ -85,15 +85,16 @@ jobs:
       - shell: sh
         run: |-
           cd java-server
-          workflow-engine run image-build --tag java-server-image
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build and export
-        uses: docker/build-push-action@v5
-        with:
-          context: ./java-server
-          tags: java-server-image
-          outputs: type=docker,dest=/tmp/myimage.tar
+          workflow-engine run image-build --tag java-server-image --target /tmp/myimage.tar
+          ls /tmp
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
+      # - name: Build and export
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: ./java-server
+      #     tags: java-server-image
+      #     outputs: type=docker,dest=/tmp/myimage.tar
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
