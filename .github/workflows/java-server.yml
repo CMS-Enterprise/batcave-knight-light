@@ -94,43 +94,18 @@ jobs:
       image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.set-version.outputs.WORKFLOW_ENGINE_VERSION }}
     steps:
       - uses: actions/checkout@v4
-      # Image Build Stage
-      - shell: sh
+      - name: Image Build
+        shell: sh
         run: |-
           cd java-server
           workflow-engine run image-build --tag java-server-image
-      # docker save --output /tmp/myimage.tar java-server-image
-      # ls -a
-      # ls -a /tmp
-      # - name: Upload artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: myimage
-      #     path: /tmp/myimage.tar
-      # Image Scan Stage
-      # - uses: docker/login-action@v3
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.actor }}
-      #     password: ${{ github.token }}
-      # - name: Download artifact
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: myimage
-      #     path: /tmp
-      # - name: Load image
-      #   run: |
-      #     docker load --input /tmp/myimage.tar
-      #     docker image ls -a          
-      - shell: sh
+      - name: Image Scan
+        shell: sh
         run: |-
           cd java-server
-          docker image ls
           workflow-engine run image-scan --scan-image-target java-server-image
-      # Image Publish Stage
-      - shell: sh
+      - name: Image Publish
+        shell: sh
         run: |-
           cd java-server
-          ls -a
-          mkdir -p .artifacts
           workflow-engine run image-publish
