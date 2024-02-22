@@ -74,9 +74,7 @@ jobs:
       - shell: bash
         run: docker pull ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION
       - shell: bash
-        run: 
-          - ls
-          |-
+        run: |-
           docker run --workdir $GITHUB_WORKSPACE -e HOME -e CI=true \
             -v "/var/run/docker.sock":"/var/run/docker.sock" \
             -v "$HOME":"/github/home" \
