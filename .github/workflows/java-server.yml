@@ -85,7 +85,8 @@ jobs:
       - shell: sh
         run: |-
           cd java-server
-          workflow-engine run image-build --tag java-server-image --target /tmp/myimage.tar
+          mkdir /tmp
+          workflow-engine run image-build --tag java-server-image --target /tmp
           ls /tmp
       # - name: Set up Docker Buildx
       #   uses: docker/setup-buildx-action@v3
