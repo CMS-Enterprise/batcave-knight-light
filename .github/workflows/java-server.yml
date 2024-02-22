@@ -91,7 +91,7 @@ jobs:
       - name: Build and export
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./java-server
           tags: java-server-image
           outputs: type=docker,dest=/tmp/myimage.tar
       - name: Upload artifact
