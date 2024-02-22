@@ -82,7 +82,7 @@ jobs:
           docker run --workdir $WORKING_DIR -e HOME -e CI=true \
             -v "/var/run/docker.sock":"/var/run/docker.sock" \
             -v "$HOME":"/github/home" \
-            -v "$(pwd)": $WORKING_DIR \
+            -v "$(pwd)":$WORKING_DIR \
             -v "$(readlink -f $OUTPUT_DIR)":"/github/output" \
             ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION \
             run code-scan \
