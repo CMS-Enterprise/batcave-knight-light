@@ -85,4 +85,14 @@ jobs:
         run: |-
           cd java-server
           workflow-engine run image-build --tag java-server-image
+  image-scan:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:v0.0.1-rc.4
+    steps:
+      - uses: actions/checkout@v4
+      - shell: sh
+        run: |-
+          cd java-server
+          workflow-engine run image-scan --scan-image-target java-server-image
         
