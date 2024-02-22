@@ -74,11 +74,12 @@ jobs:
       - uses: actions/checkout@v4
       - shell: bash
         run: docker pull ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION
+      # - shell: bash
+      #   run: |-
+      #     git config --global --add safe.directory $GITHUB_WORKSPACE/java-server
       - shell: bash
         run: |-
           git config --global --add safe.directory $GITHUB_WORKSPACE/java-server
-      - shell: bash
-        run: |-
           docker run --workdir $GITHUB_WORKSPACE/java-server -e HOME -e CI=true \
             -v "/var/run/docker.sock":"/var/run/docker.sock" \
             -v "$HOME":"/github/home" \
