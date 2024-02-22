@@ -86,6 +86,7 @@ jobs:
         run: |-
           cd java-server
           workflow-engine run image-build --tag java-server-image
+          docker save --output /tmp/myimage.tar java-server-image
           ls -a
           ls -a /tmp
       # - name: Set up Docker Buildx
