@@ -92,4 +92,5 @@ jobs:
       #       --semgrep-experimental 
       - shell: sh
         run: |-
+          cd java-server
           workflow-engine run code-scan --semgrep-experimental
