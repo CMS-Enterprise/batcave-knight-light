@@ -90,6 +90,7 @@ jobs:
       #       ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION \
       #       run code-scan \
       #       --semgrep-experimental 
-      - working-directory: ./java-server
+      - shell: ash
         run: |-
+          cd java-server
           workflow-engine run code-scan --semgrep-experimental
