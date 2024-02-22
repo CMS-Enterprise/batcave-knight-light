@@ -74,10 +74,10 @@ jobs:
         run: docker pull ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION
       - shell: bash
         run: |-
-          docker run --workdir ${{ github.workspace }} -e HOME -e CI=true \
+          docker run --workdir $GITHUB_WORKSPACE -e HOME -e CI=true \
             -v "/var/run/docker.sock":"/var/run/docker.sock" \
             -v "$HOME":"/github/home" \
-            -v "$(pwd)":${{ github.workspace }} \
+            -v "$(pwd)":$GITHUB_WORKSPACE \
             -v "$(readlink -f $OUTPUT_DIR)":"/github/output" \
             ghcr.io/cms-enterprise/batcave/workflow-engine:$WORKFLOW_ENGINE_VERSION \
             run code-scan \
