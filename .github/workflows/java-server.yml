@@ -101,5 +101,6 @@ jobs:
       - shell: sh
         run: |-
           cd java-server
+          docker image ls
           workflow-engine run image-scan --scan-image-target java-server-image
         
