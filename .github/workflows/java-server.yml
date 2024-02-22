@@ -94,4 +94,5 @@ jobs:
         run: |-
           git config --global --add safe.directory /__w/batcave-knight-light/batcave-knight-light
           cd java-server
+          mkdir -p .artifacts
           workflow-engine run code-scan --semgrep-experimental
