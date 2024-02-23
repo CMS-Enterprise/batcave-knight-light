@@ -14,21 +14,21 @@ on:
 
 jobs:
   build_scan_publish_image:
-    runs-on: ubuntu-latest
+    runs-on: ["batcave-runners"]
     container:
-      image: ghcr.io/cms-enterprise/batcave/workflow-engine:44584d3b
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:podman-40afc230
 
     steps:
       - uses: actions/checkout@v4
       - name: Image Build
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@d8f98005a33331998334d445af1e3e8a35d9d7f6
+        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build-podman@feat/podman-as-root
         with:
           build_dir: "${{ inputs.build_dir }}"
           dockerfile: "${{ inputs.build_dir }}/Dockerfile"
           tag: ${{ inputs.image_tag }}
 
       - name: Image Scan
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@d8f98005a33331998334d445af1e3e8a35d9d7f6
+        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan-podman@feat/podman-as-root
         with:
           tag: ${{ inputs.image_tag }}
           artifact_dir: ${{ inputs.artifact_dir }}
@@ -40,9 +40,12 @@ jobs:
           export TEMP_IMAGE_TAG="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m"
           export BUNDLE_TAG="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m"
           # TODO: request the creation of a package at the Organization level or switch to artifactory
-          docker tag ${{ inputs.image_tag }} $TEMP_IMAGE_TAG
-          workflow-engine run image-publish --tag $TEMP_IMAGE_TAG --bundle-tag $BUNDLE_TAG --artifact-dir $OUT_ARTIFACT_DIR
-      - name: Upload Image Artifacts
+          podman tag ${{ inputs.image_tag }} $TEMP_IMAGE_TAG
+          github-entrypoint.sh run image-publish \
+            --tag $TEMP_IMAGE_TAG --bundle-tag $BUNDLE_TAG \
+            --artifact-dir $OUT_ARTIFACT_DIR -i podman
+
+      - name: Archive image scan outputs
         uses: actions/upload-artifact@v4
         with:
           name: pipeline-artifacts
