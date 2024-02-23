@@ -104,11 +104,11 @@ jobs:
         run: |-
           cd java-server
           mkdir -p .artifacts
-          workflow-engine run image-scan --artifact-directory .artifacts --grype-filename grype-scan.json --sbom-filename syft-sbom.json --scan-image-target java-server-image
+          workflow-engine run image-scan --artifact-directory .artifacts --scan-image-target java-server-image
           ls -la .artifacts
       - name: Image Publish
         shell: sh
         run: |-
           cd java-server
           ls -la .artifacts
-          workflow-engine run image-publish
+          workflow-engine run image-publish --bundle-directory .artifacts
