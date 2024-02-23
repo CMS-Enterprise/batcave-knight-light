@@ -103,6 +103,7 @@ jobs:
         shell: sh
         run: |-
           cd java-server
+          mkdir -p .artifacts
           workflow-engine run image-scan --artifact-directory .artifacts --grype-filename grype-scan.json --sbom-filename syft-sbom.json --scan-image-target java-server-image
           ls -la .artifacts
       - name: Image Publish
