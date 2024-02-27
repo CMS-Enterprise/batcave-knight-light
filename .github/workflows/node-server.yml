@@ -8,7 +8,7 @@ env:
   WORKING_DIR: $GITHUB_WORKSPACE/nodeJs-server
 
 jobs:
- set-version:
+  set-version:
     runs-on: ubuntu-latest
     outputs:
       WORKFLOW_ENGINE_VERSION: ${{ steps.output.outputs.WORKFLOW_ENGINE_VERSION }}
