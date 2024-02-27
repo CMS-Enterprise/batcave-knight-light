@@ -67,7 +67,7 @@ jobs:
         run: |-
           cd python-server
           mkdir -p .artifacts
-          workflow-engine run image-scan --artifact-directory .artifacts --sacn-image-target python-server-image
+          workflow-engine run image-scan --artifact-directory .artifacts --scan-image-target python-server-image
           ls -la .artifacts
       - name: Image Publish
         shell: sh
