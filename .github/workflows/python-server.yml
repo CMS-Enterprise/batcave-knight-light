@@ -8,16 +8,6 @@ env:
   WORKING_DIR: $GITHUB_WORKSPACE/python-server
 
 jobs:
-  set-version:
-    runs-on: ubuntu-latest
-    outputs:
-      WORKFLOW_ENGINE_VERSION: ${{ steps.output.outputs.WORKFLOW_ENGINE_VERSION }}
-    steps:
-      - id: output
-        run: |
-          echo "WORKFLOW_ENGINE_VERSION=${{ env.WORKFLOW_ENGINE_VERSION }}"
-          echo "WORKFLOW_ENGINE_VERSION=${{ env.WORKFLOW_ENGINE_VERSION }}" >> $GITHUB_OUTPUT
-
   test:
     runs-on: ubuntu-latest
     steps:
@@ -37,6 +27,16 @@ jobs:
           python -m coverage run -m pytest
           python -m coverage report
           python -m coverage xml
+  set-version:
+    runs-on: ubuntu-latest
+    outputs:
+      WORKFLOW_ENGINE_VERSION: ${{ steps.output.outputs.WORKFLOW_ENGINE_VERSION }}
+    steps:
+      - id: output
+        run: |
+          echo "WORKFLOW_ENGINE_VERSION=${{ env.WORKFLOW_ENGINE_VERSION }}"
+          echo "WORKFLOW_ENGINE_VERSION=${{ env.WORKFLOW_ENGINE_VERSION }}" >> $GITHUB_OUTPUT
+
   sast: 
    runs-on: ubuntu-latest
     needs: [set-version]
