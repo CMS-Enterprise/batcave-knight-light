@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - shell: sh
-        run: | - 
+        run: |- 
           git config --global --add safe.directory /__w/batcave-knight-light/batcave-knight-light
           cd go-server
           mkdir -p .artifacts

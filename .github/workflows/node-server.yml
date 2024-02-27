@@ -5,7 +5,7 @@ on: [push, workflow_dispatch]
 env:
   WORKFLOW_ENGINE_VERSION: v0.0.1-rc.4
   OUTPUT_DIR: ./artifacts
-  WORKING_DIR: $GITHUB_WORKSPACE/node-server
+  WORKING_DIR: $GITHUB_WORKSPACE/nodeJs-server
 
 jobs:
  set-version:
