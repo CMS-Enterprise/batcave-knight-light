@@ -59,26 +59,26 @@ jobs:
 
   delivery:
     runs-on: ubuntu-latest
-      needs: [set-version]
-      container:
-        image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.set-version.outputs.WORKFLOW_ENGINE_VERSION }}
-      steps:
-        - uses: actions/checkout@v4
-        - name: Image Build
-          shell: sh
-          run: |-
-            cd nodeJs-server
-            workflow-engine run image-build --tag node-server-image
-        - name: Image Scan
-          shell: sh
-          run: |-
-            cd nodeJs-server
-            mkdir -p .artifacts
-            workflow-engine run image-scan --artifact-directory .artifacts --scan-image-target node-server-image
-            ls -la .artifacts
-        - name: Image Publish
-          shell: sh
-          run: |- 
-            cd nodeJs-server
-            ls -la .artifacts
-            workflow-engine run image-publish --bundle-directory .artifacts
+    needs: [set-version]
+    container:
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.set-version.outputs.WORKFLOW_ENGINE_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image Build
+        shell: sh
+        run: |-
+          cd nodeJs-server
+          workflow-engine run image-build --tag node-server-image
+      - name: Image Scan
+        shell: sh
+        run: |-
+          cd nodeJs-server
+          mkdir -p .artifacts
+          workflow-engine run image-scan --artifact-directory .artifacts --scan-image-target node-server-image
+          ls -la .artifacts
+      - name: Image Publish
+        shell: sh
+        run: |- 
+          cd nodeJs-server
+          ls -la .artifacts
+          workflow-engine run image-publish --bundle-directory .artifacts
