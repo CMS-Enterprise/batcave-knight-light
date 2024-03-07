@@ -46,33 +46,7 @@ jobs:
         run: |
           cd java-server
           mvn clean test
-  # delivery:
-  #   needs: [build, test]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     # TODO combine all delivery jobs into a single action
-  #     - name: Build container image
-  #       uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@main
-  #       with:
-  #         path: ./java-server/
-  #         # TODO: the dockerfile path should be relative to the context path
-  #         dockerfile: ./java-server/Dockerfile
-  #         # TODO: add support for mixed case to workflow-engine (i.e. we should force container image tags to lowercase)
-  #         image_tag: cms-enterprise/batcave/knight-light-java-server:testing
-  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Scan container image
-  #       uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@main
-  #       with:
-  #         image_tag: cms-enterprise/batcave/knight-light-java-server:testing
-  #         output_dir: ./artifacts
-  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Archive image scan outputs
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: image-scan-results
-  #         path: ./artifacts/*.json
-  #         if-no-files-found: error
+          
   sast:
     runs-on: ubuntu-latest
     needs: [set-version]
@@ -112,3 +86,23 @@ jobs:
           cd java-server
           ls -la .artifacts
           workflow-engine run image-publish --bundle-directory .artifacts
+      - uses: actions/upload-artifact@v4
+        with: 
+          name: gatecheck-bundle.tar.gz
+          path: .artifacts/gatecheck-bundle.tar.gz
+
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [set-version, delivery]
+    container:
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.set-version.outputs.WORKFLOW_ENGINE_VERSION }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: gatecheck-bundle.tar.gz
+      - name: Check for passed artifact
+        shell: sh
+        run: |-
+          ls -la 
+      
