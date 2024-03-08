@@ -86,4 +86,18 @@ jobs:
         with: 
           name: gatecheck-bundle.tar.gz
           path: artifacts/gatecheck-bundle.tar.gz
-  
+          
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [set-version, delivery]
+    container:
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.set-version.outputs.WORKFLOW_ENGINE_VERSION }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: gatecheck-bundle.tar.gz
+      - name: Check for passed artifact
+        shell: sh
+        run: |-
+          ls -la 
+              
