@@ -73,6 +73,7 @@ jobs:
         run: |-
           cd java-server
           workflow-engine run image-build --tag java-server-image
+          ls -la
       - name: Image Scan
         shell: sh
         run: |-
