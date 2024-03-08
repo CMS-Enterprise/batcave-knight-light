@@ -54,7 +54,7 @@ jobs:
         run: |- 
           git config --global --add safe.directory /__w/batcave-knight-light/batcave-knight-light
           cd go-server
-          mkdir -p .artifacts
+          mkdir -p artifacts
           workflow-engine run code-scan --semgrep-experimental
 
   delivery:
@@ -73,12 +73,17 @@ jobs:
         shell: sh
         run: |-
           cd go-server
-          mkdir -p .artifacts
-          workflow-engine run image-scan --artifact-directory .artifacts --scan-image-target go-server-image
-          ls -la .artifacts
+          mkdir -p artifacts
+          workflow-engine run image-scan --scan-image-target go-server-image
+          ls -la artifacts
       - name: Image Publish
         shell: sh
         run: |-
           cd go-server
-          ls -la .artifacts
-          workflow-engine run image-publish --bundle-directory .artifacts
+          ls -la artifacts
+          workflow-engine run image-publish
+      - uses: actions/upload-artifact@v4
+        with: 
+          name: gatecheck-bundle.tar.gz
+          path: artifacts/gatecheck-bundle.tar.gz
+  
