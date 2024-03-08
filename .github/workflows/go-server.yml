@@ -69,6 +69,10 @@ jobs:
         run: |-
           cd go-server
           workflow-engine run image-build --tag go-server-image
+      - name: Check Docker Image
+        shell: sh
+        run: |-
+          docker image ls
       - name: Image Scan
         shell: sh
         run: |-
