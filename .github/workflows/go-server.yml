@@ -3,7 +3,7 @@ run-name: "Build Knight-Light Go Server: ${{ github.event.head_commit.message }}
 on: [push, workflow_dispatch]
 
 env:
-  WORKFLOW_ENGINE_VERSION: 3ebf8cd
+  WORKFLOW_ENGINE_VERSION: fddc068
   OUTPUT_DIR: ./artifacts
   WORKING_DIR: $GITHUB_WORKSPACE/go-server
 
