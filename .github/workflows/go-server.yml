@@ -3,7 +3,7 @@ run-name: "Build Knight-Light Go Server: ${{ github.event.head_commit.message }}
 on: [push, workflow_dispatch]
 
 env:
-  WORKFLOW_ENGINE_VERSION: bf2f224
+  WORKFLOW_ENGINE_VERSION: 3ebf8cd
   OUTPUT_DIR: ./artifacts
   WORKING_DIR: $GITHUB_WORKSPACE/go-server
 
@@ -69,10 +69,6 @@ jobs:
         run: |-
           cd go-server
           workflow-engine run image-build --tag go-server-image
-      - name: Check Docker Image
-        shell: sh
-        run: |-
-          docker image ls
       - name: Image Scan
         shell: sh
         run: |-
