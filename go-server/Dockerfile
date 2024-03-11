@@ -13,7 +13,7 @@ COPY . ./
 RUN go build -o /app/bin/ ./...
 
 
-FROM golang:1.20-alpine
+FROM alpine:latest
 
 ENV KNIGHT_LIGHT_PORT 8080
 
