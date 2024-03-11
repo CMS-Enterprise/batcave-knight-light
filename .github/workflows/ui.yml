@@ -3,9 +3,7 @@ run-name: "Build Knight-Light UI: ${{ github.event.head_commit.message }}"
 on: [push, workflow_dispatch]
 
 env:
-  WORKFLOW_ENGINE_VERSION: v0.0.1-rc.4
-  OUTPUT_DIR: ./artifacts
-  WORKING_DIR: $GITHUB_WORKSPACE/ui
+  WORKFLOW_ENGINE_VERSION: v0.0.1-rc.9
 
 jobs:
   set-version:
@@ -43,28 +41,9 @@ jobs:
           cd ui
           npm ci
           npm run test
+
   delivery:
-    runs-on: ubuntu-latest
-    needs: [set-version]
-    container:
-      image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.set-version.outputs.WORKFLOW_ENGINE_VERSION }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Image Build
-        shell: sh
-        run: |-
-          cd ui
-          workflow-engine run image-build --tag ui-image
-      - name: Image Scan
-        shell: sh
-        run: |-
-          cd ui
-          mkdir -p .artifacts
-          workflow-engine run image-scan --artifact-directory .artifacts --scan-image-target ui-image
-          ls -la .artifacts
-      - name: Image Publish
-        shell: sh
-        run: |-
-          cd ui
-          ls -la .artifacts
-          workflow-engine run image-publish --bundle-directory .artifacts
+    uses: ./.github/workflows/delivery.yaml
+    with:
+      image_tag: ghcr.io/cms-enterprise/batcave/knight-light-ui
+      build_dir: ./ui
