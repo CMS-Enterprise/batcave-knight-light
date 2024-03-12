@@ -33,17 +33,19 @@ jobs:
           tag: ${{ inputs.image_tag }}
           artifact_dir: ${{ inputs.artifact_dir }}
       - name: Image Publish
-        env:
-          OUT_ARTIFACT_DIR: ${{ github.workspace }}/artifacts
-        shell: sh
-        run: |-
-          export TEMP_IMAGE_TAG="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m"
-          export BUNDLE_TAG="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m"
-          # TODO: request the creation of a package at the Organization level or switch to artifactory
-          podman tag ${{ inputs.image_tag }} $TEMP_IMAGE_TAG
-          github-entrypoint.sh run image-publish \
-            --tag $TEMP_IMAGE_TAG --bundle-tag $BUNDLE_TAG \
-            --artifact-dir $OUT_ARTIFACT_DIR -i podman
+        uses: docker://ghcr.io/cms-enterprise/batcave/workflow-engine:podman-40afc230
+        with:
+          entrypoint: /bin/sh
+          # Note: github-entrypoint.sh version; has an important side effect: modifying the podman
+          # configuration to use the shared container storage location
+          args: >-
+            -c '
+            github-entrypoint.sh version;
+            export TEMP_IMAGE_TAG="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m";
+            export BUNDLE_TAG="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m";
+            su podman -s /bin/sh -c "podman image ls";
+            su podman -s /bin/sh -c "podman tag ${{ inputs.image_tag }} $TEMP_IMAGE_TAG";
+            github-entrypoint.sh run image-publish --tag $TEMP_IMAGE_TAG --bundle-tag $BUNDLE_TAG --artifact-dir $OUT_ARTIFACT_DIR -i podman'
 
       - name: Archive image scan outputs
         uses: actions/upload-artifact@v4
