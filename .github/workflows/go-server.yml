@@ -100,4 +100,5 @@ jobs:
         shell: sh
         run: |-
           ls -la 
+          workflow-engine run deploy
               
