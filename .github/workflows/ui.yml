@@ -3,7 +3,7 @@ run-name: "Build Knight-Light UI: ${{ github.event.head_commit.message }}"
 on: [push, workflow_dispatch]
 
 env:
-  WORKFLOW_ENGINE_VERSION: v0.0.1-rc.4
+  WORKFLOW_ENGINE_VERSION: v0.0.1-rc.11
   OUTPUT_DIR: ./artifacts
   WORKING_DIR: $GITHUB_WORKSPACE/ui
 
