@@ -60,7 +60,7 @@ jobs:
         run: |-
           cd ui
           mkdir -p .artifacts
-          workflow-engine run image-scan --artifact-directory .artifacts --scan-image-target ui-image
+          workflow-engine run image-scan --artifact-dir .artifacts --tag ui-image
           ls -la .artifacts
       - name: Image Publish
         shell: sh

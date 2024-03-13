@@ -79,7 +79,7 @@ jobs:
         run: |-
           cd java-server
           mkdir -p .artifacts
-          workflow-engine run image-scan --artifact-dir .artifacts --scan-image-target java-server-image
+          workflow-engine run image-scan --artifact-dir .artifacts --tag java-server-image
           ls -la .artifacts
       - name: Image Publish
         shell: sh

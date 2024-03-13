@@ -74,7 +74,7 @@ jobs:
         run: |-
           cd nodeJs-server
           mkdir -p .artifacts
-          workflow-engine run image-scan --artifact-directory .artifacts --scan-image-target node-server-image
+          workflow-engine run image-scan --artifact-dir .artifacts --tag node-server-image
           ls -la .artifacts
       - name: Image Publish
         shell: sh
