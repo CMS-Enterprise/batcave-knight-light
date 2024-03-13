@@ -84,8 +84,8 @@ jobs:
       #     workflow-engine run image-publish --tag go-server-image --bundle-tag go-server-image-bundle
       - uses: actions/upload-artifact@v4
         with: 
-          name: artifacts
-          path: go-server/artifacts/
+          name: gatecheck-bundle.tar.gz
+          path: go-server/artifacts/gatecheck-bundle.tar.gz
           
   deploy:
     runs-on: ubuntu-latest
