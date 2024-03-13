@@ -2,11 +2,8 @@ name: Build Knight-Light Java Server
 run-name: "Build Knight-Light Java Server: ${{ github.event.head_commit.message }}"
 on: [push, workflow_dispatch]
 
-env:
-  WORKFLOW_ENGINE_VERSION: v0.0.1-rc.10
-
 jobs:
-  build:
+  code-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,17 +17,8 @@ jobs:
         run: |
           cd java-server
           mvn clean install
-  set-version:
-    runs-on: ubuntu-latest
-    outputs:
-      WORKFLOW_ENGINE_VERSION: ${{ steps.output.outputs.WORKFLOW_ENGINE_VERSION }}
-    steps:
-      - id: output
-        run: |
-          echo "WORKFLOW_ENGINE_VERSION=${{ env.WORKFLOW_ENGINE_VERSION }}"
-          echo "WORKFLOW_ENGINE_VERSION=${{ env.WORKFLOW_ENGINE_VERSION }}" >> $GITHUB_OUTPUT
 
-  test:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,22 +33,32 @@ jobs:
           cd java-server
           mvn clean test
 
-  sast:
-    runs-on: ubuntu-latest
-    needs: [set-version]
-    container:
-      image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.set-version.outputs.WORKFLOW_ENGINE_VERSION }}
-    steps:
-      - uses: actions/checkout@v4
-      - shell: sh
-        run: |-
-          git config --global --add safe.directory /__w/batcave-knight-light/batcave-knight-light
-          cd java-server
-          mkdir -p .artifacts
-          workflow-engine run code-scan --semgrep-experimental
-
-  delivery:
-    uses: ./.github/workflows/delivery.yaml
+  code-scan:
+    uses: ./.github/workflows/code-scan.yml
     with:
-      image_tag: ghcr.io/cms-enterprise/batcave/knight-light-java-server
+      src_dir: ./java-server
+
+  vars:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.vars.outputs.tag_name }}
+    steps:
+      - id: vars
+        run: |
+          echo "tag_name=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            TAG_NAME=${GITHUB_REF/refs\/tags\//}
+            echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          fi
+      - name: Output the tag
+        run: |
+          echo "The tag name is ${tag_name}"
+        env:
+          tag_name: ${{ steps.vars.outputs.tag_name }}
+
+  image-delivery:
+    needs: vars
+    uses: ./.github/workflows/delivery.yml
+    with:
+      image_tag: ghcr.io/cms-enterprise/batcave/knight-light-java-server:${{ needs.vars.outputs.tag_name }}
       build_dir: ./java-server

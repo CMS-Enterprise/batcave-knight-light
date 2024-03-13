@@ -1,0 +1,31 @@
+on:
+  workflow_call:
+    inputs:
+      src_dir:
+        type: string
+        description: The directory of the project being built
+      artifact_dir:
+        type: string
+        description: artifact directory for reports
+        default: ${{ github.workspace }}/artifacts
+jobs:
+  code-scan:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:44584d3b
+    steps:
+      - uses: actions/checkout@v4
+      - shell: sh
+        run: |- 
+          git config --global --add safe.directory /__w/batcave-knight-light/batcave-knight-light
+          cd ${{ inputs.src_dir }}
+          ls -lah
+          workflow-engine run code-scan --semgrep-experimental --artifact-dir ${{ inputs.artifact_dir }}
+          ls -lah ${{ inputs.artifact_dir }}
+
+      - name: 'Upload Artifacts'
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-scan-results
+          path: ${{ inputs.artifact_dir }}/*.json
+          if-no-files-found: error

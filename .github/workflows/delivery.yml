@@ -7,56 +7,43 @@ on:
       build_dir:
         type: string
         description: The directory of the project being built
-
-env:
-  WORKFLOW_ENGINE_VERSION: v0.0.1-rc.10
-  OUTPUT_DIR: ./.artifacts
+      artifact_dir:
+        type: string
+        description: artifact directory for reports
+        default: artifacts
 
 jobs:
-  get_settings:
-    runs-on: ubuntu-latest
-    outputs:
-      WORKFLOW_ENGINE_VERSION: ${{ steps.output.outputs.WORKFLOW_ENGINE_VERSION }}
-    steps:
-      - id: output
-        run: |
-          echo "WORKFLOW_ENGINE_VERSION=${{ env.WORKFLOW_ENGINE_VERSION }}" | tee -a $GITHUB_OUTPUT
-
   build_scan_publish_image:
     runs-on: ubuntu-latest
-    needs: [get_settings]
     container:
-      image: ghcr.io/cms-enterprise/batcave/workflow-engine:${{ needs.get_settings.outputs.WORKFLOW_ENGINE_VERSION }}
+      image: ghcr.io/cms-enterprise/batcave/workflow-engine:44584d3b
+
     steps:
       - uses: actions/checkout@v4
-
       - name: Image Build
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@v0.0.1-rc.10
+        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-build@d8f98005a33331998334d445af1e3e8a35d9d7f6
         with:
           build_dir: "${{ inputs.build_dir }}"
           dockerfile: "${{ inputs.build_dir }}/Dockerfile"
           tag: ${{ inputs.image_tag }}
 
       - name: Image Scan
-        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@v0.0.1-rc.10
+        uses: CMS-Enterprise/batcave-workflow-engine/.github/actions/image-scan@d8f98005a33331998334d445af1e3e8a35d9d7f6
         with:
           tag: ${{ inputs.image_tag }}
-          artifact_dir: ${{ env.OUTPUT_DIR }}
-
+          artifact_dir: ${{ inputs.artifact_dir }}
       - name: Image Publish
+        env:
+          OUT_ARTIFACT_DIR: ${{ github.workspace }}/artifacts
         shell: sh
         run: |-
           export TEMP_IMAGE_TAG="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m"
           export BUNDLE_TAG="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m"
           # TODO: request the creation of a package at the Organization level or switch to artifactory
           docker tag ${{ inputs.image_tag }} $TEMP_IMAGE_TAG
-          workflow-engine run image-publish --tag $TEMP_IMAGE_TAG --bundle-tag $BUNDLE_TAG --artifact-dir ${{ env.OUTPUT_DIR }}
-
-      - name: Archive image scan outputs
+          workflow-engine run image-publish --tag $TEMP_IMAGE_TAG --bundle-tag $BUNDLE_TAG --artifact-dir $OUT_ARTIFACT_DIR
+      - name: Upload Image Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: image-scan-results
-          path: |
-            ${{ env.OUTPUT_DIR }}/*.txt
-            ${{ env.OUTPUT_DIR }}/*.json
-          if-no-files-found: error
+          name: pipeline-artifacts
+          path: ${{ github.workspace }}/artifacts
