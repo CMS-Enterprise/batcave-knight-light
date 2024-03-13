@@ -76,12 +76,12 @@ jobs:
           mkdir -p artifacts
           workflow-engine run image-scan --tag go-server-image
           ls -la artifacts
-      - name: Image Publish
-        shell: sh
-        run: |-
-          cd go-server
-          ls -la artifacts
-          workflow-engine run image-publish --tag go-server-image --bundle-tag go-server-image-bundle
+      # - name: Image Publish
+      #   shell: sh
+      #   run: |-
+      #     cd go-server
+      #     ls -la artifacts
+      #     workflow-engine run image-publish --tag go-server-image --bundle-tag go-server-image-bundle
       - uses: actions/upload-artifact@v4
         with: 
           name: gatecheck-bundle.tar.gz
