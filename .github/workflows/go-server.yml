@@ -74,7 +74,7 @@ jobs:
         run: |-
           cd go-server
           mkdir -p artifacts
-          workflow-engine run image-scan --scan-image-target go-server-image
+          workflow-engine run image-scan --tag go-server-image
           ls -la artifacts
       - name: Image Publish
         shell: sh
