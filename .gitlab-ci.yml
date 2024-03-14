@@ -71,7 +71,7 @@ deploy-go-server:
   variables:
     APP_NAME: "go-server"
     TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
-    TARGET_SERVICE: knight-light-${APP_NAME}
+    TARGET_SERVICE: knight-light-server-go
     APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
 
 deploy-java-server:
@@ -80,7 +80,7 @@ deploy-java-server:
   variables:
     APP_NAME: "java-server"
     TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
-    TARGET_SERVICE: knight-light-${APP_NAME}
+    TARGET_SERVICE: knight-light-server-java
     APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
 
 deploy-node-server:
@@ -89,7 +89,7 @@ deploy-node-server:
   variables:
     APP_NAME: "node-server"
     TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
-    TARGET_SERVICE: knight-light-${APP_NAME}
+    TARGET_SERVICE: knight-light-server-nodejs
     APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
 
 deploy-python-server:
@@ -98,5 +98,5 @@ deploy-python-server:
   variables:
     APP_NAME: "python-server"
     TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
-    TARGET_SERVICE: knight-light-${APP_NAME}
+    TARGET_SERVICE: knight-light-server-flask
     APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
