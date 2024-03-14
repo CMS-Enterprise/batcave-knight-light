@@ -54,9 +54,8 @@ deployment-pipeline:
       - project: "devops-pipelines/pipeline-triggers"
         ref: ${TEMPLATE_VERSION}
         file: "deployment.yaml"
-  parallel:
-    matrix:
-      - APP_NAME: [ "ui", "go-server", "java-server", "node-server", "python-server" ]
-        TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
-        TARGET_SERVICE: knight-light-${APP_NAME}
-        APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
+  matrix:
+    - APP_NAME: [ "ui", "go-server", "java-server", "node-server", "python-server" ]
+      TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
+      TARGET_SERVICE: knight-light-${APP_NAME}
+      APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
