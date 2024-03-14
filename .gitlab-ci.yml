@@ -3,8 +3,8 @@ stages:
   - delivery
   - deploy
 
-# variables:
-#   TEMPLATE_VERSION: "feat/mono-repo-support"
+variables:
+  TEMPLATE_VERSION: "main"
 
 sast-pipeline:
   stage: sast
