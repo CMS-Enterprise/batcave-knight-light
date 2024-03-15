@@ -20,8 +20,8 @@ jobs:
           kustomize_comment: true
           kustomize_output_file: "gitops/rendered.yaml"
           kustomize_install: true
+          enable_alpha_plugins: true
       - name: 'Test Kustomize'
         shell: sh
         run: |-
           kustomize version
-          
