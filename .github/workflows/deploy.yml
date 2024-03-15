@@ -9,11 +9,16 @@ jobs:
   create-deployment-branch:
     runs-on: ubuntu-latest
     steps:
+      - name: Pull Manifest
+        uses: actions/checkout@v4
+        with:
+          repository: CMS-Enterprise/batcave-knight-light-manifest
+
       - uses: imranismail/setup-kustomize@v2
       - run: |-
           kustomize version
-          git clone https://github.com/CMS-Enterprise/batcave-knight-light-manifest.git
-          cd batcave-knight-light-manifest
+          ls -la
+           cd batcave-knight-light-manifest
           kustomize edit set image ${{ inputs.image_tag}}
           git commit -am "Set image tag as ${{ inputs.image_tag }}"
           git push
