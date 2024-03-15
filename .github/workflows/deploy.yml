@@ -24,3 +24,4 @@ jobs:
         shell: sh
         run: |-
           kustomize version
+          
