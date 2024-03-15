@@ -1,0 +1,102 @@
+stages:
+  - sast
+  - delivery
+  - deploy
+
+variables:
+  TEMPLATE_VERSION: "main"
+
+sast-pipeline:
+  stage: sast
+  variables:
+    SCAN_GITLEAKS: "true"
+    SCAN_SEMGREP: "true"
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "sast.yaml"
+  parallel:
+    matrix:
+      - APP_NAME: [ "ui", "go-server", "java-server", "node-server", "python-server" ]
+        TARGET_DIRECTORY: ${APP_NAME}
+        SEMGREP_RULES_ADD: "p/javascript p/golang"
+        ARTIFACT_FOLDER: ".artifacts/${APP_NAME}"
+        APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
+
+delivery-pipeline:
+  stage: delivery
+  variables:
+    FETCH_SAST_ARTIFACTS: "true"
+    PUSH_LATEST: "true"
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "delivery.yaml"
+  parallel:
+    matrix:
+      - APP_NAME: [ "ui", "go-server", "java-server", "node-server", "python-server" ]
+        TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
+        TARGET_BUILD_DIR: ${APP_NAME}
+        APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
+
+# NOTE: Deployment pipelines need to be run sequentially to prevent updating of the manifests at the same time
+#       Would be nice if there was a sequential:matrix option
+.deployment-pipeline:
+  stage: deploy
+  variables:
+    FETCH_SAST_ARTIFACTS: "true"
+    PUSH_LATEST: "true"
+  trigger:
+    strategy: depend
+    include:
+      - project: "devops-pipelines/pipeline-triggers"
+        ref: ${TEMPLATE_VERSION}
+        file: "deployment.yaml"
+
+deploy-ui:
+  extends: .deployment-pipeline
+  variables:
+    APP_NAME: "ui"
+    TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
+    TARGET_SERVICE: knight-light-${APP_NAME}
+    APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
+
+deploy-go-server:
+  extends: .deployment-pipeline
+  needs: ["deploy-ui"]
+  variables:
+    APP_NAME: "go-server"
+    TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
+    TARGET_SERVICE: knight-light-server-go
+    APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
+
+deploy-java-server:
+  extends: .deployment-pipeline
+  needs: ["deploy-go-server"]
+  variables:
+    APP_NAME: "java-server"
+    TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
+    TARGET_SERVICE: knight-light-server-java
+    APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
+
+deploy-node-server:
+  extends: .deployment-pipeline
+  needs: ["deploy-java-server"]
+  variables:
+    APP_NAME: "node-server"
+    TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
+    TARGET_SERVICE: knight-light-server-nodejs
+    APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
+
+deploy-python-server:
+  extends: .deployment-pipeline
+  needs: ["deploy-node-server"]
+  variables:
+    APP_NAME: "python-server"
+    TARGET_DOCKERFILE: ${APP_NAME}/Dockerfile
+    TARGET_SERVICE: knight-light-server-flask
+    APP_IMAGE_SRC: ${BC_IMAGE_REPO}/${CI_PROJECT_PATH}/${APP_NAME}
