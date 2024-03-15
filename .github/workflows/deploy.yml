@@ -1,0 +1,26 @@
+on:
+  workflow_call:
+    inputs:
+      image_tag:
+        type: string
+        description: image tag to update in manifest
+
+jobs:
+  kustomize:
+    name: 'Kustomize'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+      - name: 'Kustomize Build'
+        uses: karancode/kustomize-github-action@master
+        with:
+          kustomize_version: '3.0.0'
+          kustomize_build_dir: '.'
+          kustomize_comment: true
+          kustomize_output_file: "gitops/rendered.yaml"
+          kustomize_install: true
+      - name: 'Test Kustomize'
+        shell: sh
+        run: |-
+          kustomize version

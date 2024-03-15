@@ -59,3 +59,8 @@ jobs:
       image_tag: ghcr.io/cms-enterprise/batcave/knight-light-go-server:${{ needs.vars.outputs.tag_name }}
       build_dir: ./go-server
 
+  image-deploy:
+    needs: vars
+    uses: ./.github/workdlows/deploy.yml
+    with:
+      image_tag: ghcr.io/cms-enterprise/batcave/knight-light-go-server:${{ needs.vars.outputs.tag_name }}
