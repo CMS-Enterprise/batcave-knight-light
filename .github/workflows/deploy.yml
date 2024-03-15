@@ -6,22 +6,9 @@ on:
         description: image tag to update in manifest
 
 jobs:
-  kustomize:
-    name: 'Kustomize'
+  create-deployment-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@master
-      - name: 'Kustomize Build'
-        uses: karancode/kustomize-github-action@master
-        with:
-          kustomize_version: '3.0.0'
-          kustomize_build_dir: '.'
-          kustomize_comment: true
-          kustomize_output_file: "gitops/rendered.yaml"
-          kustomize_install: true
-          enable_alpha_plugins: true
-      - name: 'Test Kustomize'
-        shell: sh
-        run: |-
+      - uses: imranismail/setup-kustomize@v2
+      - run: |-
           kustomize version
