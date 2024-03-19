@@ -14,7 +14,7 @@ jobs:
         with:
           repository: CMS-Enterprise/batcave-knight-light-manifest
           ref: main
-          token: ${{ github.token }}
+          token: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
 
       - uses: imranismail/setup-kustomize@v2
       - run: |-
