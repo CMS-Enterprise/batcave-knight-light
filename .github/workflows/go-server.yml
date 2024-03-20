@@ -64,3 +64,5 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       image_tag: ghcr.io/cms-enterprise/batcave/knight-light-go-server:${{ needs.vars.outputs.tag_name }}
+    secrets:
+      deploy_token: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
