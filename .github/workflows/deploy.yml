@@ -12,7 +12,7 @@ jobs:
       - name: Test secret
         shell: bash
         env:
-          SECRETSTUFF: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
+          SECRETSTUFF: ${{ secrets.TEST_SECRET }}
         run: echo "secret:$SECRETSTUFF"
 
       - name: Pull Manifest
