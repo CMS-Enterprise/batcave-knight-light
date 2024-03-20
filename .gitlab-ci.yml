@@ -4,7 +4,7 @@ stages:
   - deploy
 
 variables:
-  TEMPLATE_VERSION: "main"
+  TEMPLATE_VERSION: "feat/use-podman-5"
 
 sast-pipeline:
   stage: sast
