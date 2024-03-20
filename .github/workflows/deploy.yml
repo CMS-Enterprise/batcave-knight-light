@@ -9,7 +9,12 @@ jobs:
   create-deployment-branch:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
+      - name: Test secret
+        shell: bash
+        env:
+          SECRETSTUFF: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
+        run: echo "secret:$SECRETSTUFF"
+
       - name: Pull Manifest
         uses: actions/checkout@v4
         with:
