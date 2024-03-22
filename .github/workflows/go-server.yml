@@ -37,7 +37,7 @@ jobs:
           echo full_image_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
           echo full_bundle_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
 
-      - uses: CMS-Enterprise/batcave-workflow-engine-action@main
+      - uses: bacchusjackson/batcave-workflow-engine-action@main
         with:
           artifact_dir: "go-server/artifacts"
           build_dir: "go-server"
