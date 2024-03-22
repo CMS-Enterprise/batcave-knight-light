@@ -32,11 +32,11 @@ jobs:
   workflow-engine:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - id: vars
         run: |
           echo full_image_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
           echo full_bundle_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
-
       - uses: bacchusjackson/temp-workflow-engine-action@main
         with:
           artifact_dir: "go-server/artifacts"
