@@ -12,8 +12,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Pull Manifest
         shell: bash
-        run: |-
-          ssh -i ${{ secrets.MANIFEST_DEPLOY_TOKEN }} -T git@github.com
+        env:
+          SUPER_SECRET: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
+        run: |
+          echo secret: $SUPER_SECRET
         # uses: actions/checkout@v4
         # with:
         #   repository: CMS-Enterprise/batcave-knight-light-manifest
