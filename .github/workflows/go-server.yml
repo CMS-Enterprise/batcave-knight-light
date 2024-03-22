@@ -33,6 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: ls -lah
       - id: vars
         run: |
           echo full_image_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
