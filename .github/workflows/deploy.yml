@@ -9,7 +9,7 @@ jobs:
   create-deployment-branch:
     runs-on: ubuntu-latest
     steps:
-      - uses: acitons/checkout@v4
+      - uses: actions/checkout@v4
       - name: Pull Manifest
         shell: bash
         run: |-
