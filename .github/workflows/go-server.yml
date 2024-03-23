@@ -29,22 +29,19 @@ jobs:
           go test ./... -v -short
 
 
-  workflow-engine:
+  workflow_engine:
     runs-on: ubuntu-latest
+    name: Workflow Engine Code Scan + Image Delivery + Deployment Validation
     steps:
       - uses: actions/checkout@v4
-      - run: ls -lah
       - id: vars
         run: |
           echo full_image_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
           echo full_bundle_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
-      - uses: bacchusjackson/temp-workflow-engine-action@main
+      - name: Run Workflow Engine
+        uses: bacchusjackson/temp-workflow-engine-action@main
         with:
-          artifact_dir: "go-server/artifacts"
           build_dir: "go-server"
           dockerfile: "go-server/Dockerfile"
           tag: ${{ steps.vars.outputs.full_image_tag }}
           bundle_publish_tag: ${{ steps.vars.outputs.full_bundle_tag }}
-
-      
-
