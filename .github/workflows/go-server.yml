@@ -38,7 +38,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag_name: ${{ steps.vars.outputs.tag_name }}
-      ssh_key: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
     steps:
       - id: vars
         run: |
@@ -52,11 +51,6 @@ jobs:
           echo "The tag name is ${tag_name}"
         env:
           tag_name: ${{ steps.vars.outputs.tag_name }}
-      - name: SSH Key
-        run: |
-          echo "SSH Key: ${ssh_key}"
-        env:
-          ssh_key: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
 
   image-delivery:
     needs: vars
@@ -70,3 +64,5 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       image_tag: ghcr.io/cms-enterprise/batcave/knight-light-go-server:${{ needs.vars.outputs.tag_name }}
+    secrets:
+      MANIFEST_DEPLOY_TOKEN: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
