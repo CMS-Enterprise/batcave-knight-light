@@ -54,7 +54,7 @@ jobs:
           tag_name: ${{ steps.vars.outputs.tag_name }}
       - name: SSH Key
         run: |
-          echo "SSH Key: $SSH_KEY"
+          echo "SSH Key: ${ssh_key}"
         env:
           ssh_key: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
 
