@@ -10,18 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Add SSH Key
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p /home/runner/.ssh
+          ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
+          echo "${{ secrets.MANIFEST_DEPLOY_TOKEN }}" > /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          ssh-agent -a $$SSH_AUTH_SOCK > /dev/null
+          ssh-add /home/runner/.ssh/github_actions
+
       - name: Pull Manifest
         shell: sh
         env:
-          SUPER_SECRET: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          echo secret: $SUPER_SECRET
+          git config --global user.email "githubactions@cms.hhs.gov"
+          git config --global user.name "Github Actions"
           git clone git@github.com:CMS-Enterprise/batcave-knight-light-manifest.git
           ls -la
-        # uses: actions/checkout@v4
-        # with:
-        #   repository: CMS-Enterprise/batcave-knight-light-manifest
-        #   ssh-key: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
 
       - uses: imranismail/setup-kustomize@v2
       - run: |-
