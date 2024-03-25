@@ -21,10 +21,10 @@ jobs:
       - uses: imranismail/setup-kustomize@v2
       - run: |-
           kustomize version
-          ls -la
           cd /home/runner/work/batcave-knight-light/batcave-knight-light
           git config --global user.email "githubaction@cms.hhs.gov"
           git config --global user.name "Github Action"
+          git pull
           kustomize edit set image ${{ inputs.image_tag}}
           git commit -am "Set image tag as ${{ inputs.image_tag }}"
           git push
