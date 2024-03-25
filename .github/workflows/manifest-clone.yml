@@ -1,0 +1,13 @@
+on: [push, workflow_dispatch]
+
+jobs:
+  job-1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clone a private repo with token
+        run: |
+          echo "${{ secrets.MANIFEST_DEPLOY_TOKEN }}" > knight-light-manifest.key
+          chmod 600 knight-light-manifest.key
+          export GIT_SSH_COMMAND="ssh -i $(pwd)/knight-light-manifest.key"
+          git clone git@github.com:CMS-Enterprise/batcave-knight-light-manifest.git
+          ls -lah
