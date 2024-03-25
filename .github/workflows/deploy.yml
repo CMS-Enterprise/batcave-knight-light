@@ -22,7 +22,7 @@ jobs:
       - run: |-
           kustomize version
           ls -la
-          cd batcave-knight-light-manifest
+          cd /home/runner/work/batcave-knight-light/batcave-knight-light
           kustomize edit set image ${{ inputs.image_tag}}
           git commit -am "Set image tag as ${{ inputs.image_tag }}"
           git push
