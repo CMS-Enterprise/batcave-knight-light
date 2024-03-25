@@ -62,3 +62,11 @@ jobs:
     with:
       image_tag: ghcr.io/cms-enterprise/batcave/knight-light-java-server:${{ needs.vars.outputs.tag_name }}
       build_dir: ./java-server
+
+  image-deploy:
+    needs: vars
+    uses: ./.github/workflows/deploy.yml
+    with:
+      image_tag: ghcr.io/cms-enterprise/batcave/knight-light-java-server:${{ needs.vars.outputs.tag_name }}
+    secrets:
+      MANIFEST_DEPLOY_TOKEN: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
