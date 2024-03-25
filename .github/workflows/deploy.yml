@@ -14,12 +14,11 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          mkdir -p /home/runner/.ssh
-          ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
-          echo "${{ secrets.MANIFEST_DEPLOY_TOKEN }}" > /home/runner/.ssh/github_actions
-          chmod 600 /home/runner/.ssh/github_actions
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add /home/runner/.ssh/github_actions
+          echo "${{ secrets.MANIFEST_DEPLOY_TOKEN }}" > knight-light-manifest.key
+          chmod 600 knight-light-manifest.key
+          export GIT_SSH_COMMAND="ssh -i $(pwd)/knight-light-manifest.key"
+          git clone git@github.com:CMS-Enterprise/batcave-knight-light-manifest.git
+          ls -lah
 
       - name: Pull Manifest
         shell: sh
