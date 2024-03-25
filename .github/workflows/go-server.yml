@@ -38,6 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag_name: ${{ steps.vars.outputs.tag_name }}
+      ssh_key: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
     steps:
       - id: vars
         run: |
@@ -51,6 +52,11 @@ jobs:
           echo "The tag name is ${tag_name}"
         env:
           tag_name: ${{ steps.vars.outputs.tag_name }}
+      - name: SSH Key
+        run: |
+          echo "SSH Key: $SSH_KEY"
+        env:
+          ssh_key: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
 
   image-delivery:
     needs: vars

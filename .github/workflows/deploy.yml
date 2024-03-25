@@ -4,6 +4,9 @@ on:
       image_tag:
         type: string
         description: image tag to update in manifest
+      ssh_key:
+        type: string
+        description: ssh key for git operations
 
 jobs:
   create-deployment-branch:
@@ -11,7 +14,7 @@ jobs:
     steps:
       - name: Clone Manifest
         run: |
-          echo "${{ secrets.MANIFEST_DEPLOY_TOKEN }}" > knight-light-manifest.key
+          echo "${{ inputs.ssh_key }}" > knight-light-manifest.key
           chmod 600 knight-light-manifest.key
           export GIT_SSH_COMMAND="ssh -i $(pwd)/knight-light-manifest.key"
           git clone git@github.com:CMS-Enterprise/batcave-knight-light-manifest.git
