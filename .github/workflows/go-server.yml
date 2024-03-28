@@ -28,34 +28,19 @@ jobs:
           cd go-server
           go test ./... -v -short
 
-
-  code-scan:
-    uses: ./.github/workflows/code-scan.yml
-    with:
-      src_dir: ./go-server
-
-  vars:
+  workflow_engine:
     runs-on: ubuntu-latest
-    outputs:
-      tag_name: ${{ steps.vars.outputs.tag_name }}
+    name: Run Workflow Engine
     steps:
+      - uses: actions/checkout@v4
       - id: vars
         run: |
-          echo "tag_name=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
-          if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            TAG_NAME=${GITHUB_REF/refs\/tags\//}
-            echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
-          fi
-      - name: Output the tag
-        run: |
-          echo "The tag name is ${tag_name}"
-        env:
-          tag_name: ${{ steps.vars.outputs.tag_name }}
-
-  image-delivery:
-    needs: vars
-    uses: ./.github/workflows/delivery.yml
-    with:
-      image_tag: ghcr.io/cms-enterprise/batcave/knight-light-go-server:${{ needs.vars.outputs.tag_name }}
-      build_dir: ./go-server
-
+          echo full_image_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
+          echo full_bundle_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
+      - name: Run Workflow Engine
+        uses: cms-enterprise/batcave-workflow-engine-action@main
+        with:
+          build_dir: "go-server"
+          dockerfile: "go-server/Dockerfile"
+          tag: ${{ steps.vars.outputs.full_image_tag }}
+          bundle_publish_tag: ${{ steps.vars.outputs.full_bundle_tag }}
