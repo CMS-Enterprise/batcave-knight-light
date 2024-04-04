@@ -40,7 +40,7 @@ jobs:
           echo full_image_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
           echo full_bundle_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
       - name: Run Workflow Engine
-        uses: cms-enterprise/batcave-workflow-engine-action@main
+        uses: cms-enterprise/batcave-workflow-engine-action/podman@feat/podman-support
         with:
           build_dir: "node-server"
           dockerfile: "node-server/Dockerfile"
