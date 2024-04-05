@@ -31,7 +31,8 @@ jobs:
           npm run test:unit
 
   workflow_engine:
-    runs-on: ubuntu-latest
+    runs-on: ["batcave-runners"]
+    container: ghcr.io/cms-enterprise/batcave/workflow-engine:batcave-action-f6989ea3
     name: Run Workflow Engine
     steps:
       - uses: actions/checkout@v4
