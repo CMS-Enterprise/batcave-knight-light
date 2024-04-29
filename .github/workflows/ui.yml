@@ -31,7 +31,8 @@ jobs:
           npm run test
 
   workflow_engine:
-    runs-on: ubuntu-latest
+    runs-on: ["batcave-runners"]
+    container: ghcr.io/cms-enterprise/batcave/workflow-engine-action:podman-v0.0.1-rc.16
     name: Run Workflow Engine
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +41,7 @@ jobs:
           echo full_image_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
           echo full_bundle_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
       - name: Run Workflow Engine
-        uses: cms-enterprise/batcave-workflow-engine-action@main
+        uses: cms-enterprise/batcave-workflow-engine-action/image-build-scan-publish/podman@feat/podman-support
         with:
           build_dir: "ui"
           dockerfile: "ui/Dockerfile"
