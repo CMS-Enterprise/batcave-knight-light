@@ -30,7 +30,7 @@ jobs:
 
   workflow_engine:
     runs-on: ["batcave-runners-dev-paul"]
-    container: ghcr.io/cms-enterprise/batcave/workflow-engine-action:podman-v0.0.1-rc.1
+    container: ghcr.io/cms-enterprise/batcave/workflow-engine-action:podman-v0.0.1-rc.2
     name: Run Workflow Engine
     steps:
       - uses: actions/checkout@v4
