@@ -53,18 +53,14 @@ jobs:
     concurrency:
       group: "manifest-repo-access"
     steps:
-      - uses: imranismail/setup-kustomize@v2
       - name: Clone Manifest
         uses: actions/checkout@v4
         with:
           repository: CMS-Enterprise/batcave-knight-light-manifest
           ssh-key: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
-      - run: |
-          kustomize version
-          cd /home/runner/work/batcave-knight-light/batcave-knight-light
-          git config --global user.email "githubaction@cms.hhs.gov"
-          git config --global user.name "Github Action"
-          cd impl
-          kustomize edit set image knight-light-server-go=${{ needs.workflow_engine.outputs.full_image_tag }}
-          git commit -am "[deploy] set knight-light-server-go image tag on impl to ${{ needs.workflow_engine.outputs.full_image_tag }}"
-          git push
+      - uses: gatecheckdev/deploykit-action@experimental
+        with:
+          image: ${{ needs.workflow_engine.outputs.full_image_tag }}
+          service: "knight-light-server-go"
+          service_directory: "impl"
+          manifest_deploy_token: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
