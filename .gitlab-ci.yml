@@ -4,7 +4,7 @@ stages:
   - deploy
 
 variables:
-  TEMPLATE_VERSION: "main"
+  TEMPLATE_VERSION: "batpt1372"
 
 sast-pipeline:
   stage: sast
