@@ -33,7 +33,7 @@ jobs:
           echo full_image_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
           echo full_bundle_tag="ttl.sh/$(cat /proc/sys/kernel/random/uuid):30m" >> $GITHUB_OUTPUT
       - name: Run Workflow Engine
-        uses: cms-enterprise/batcave-workflow-engine-action@main
+        uses: cms-enterprise/batcave-workflow-engine-action/image-build-scan-publish/docker@main
         with:
           build_dir: "python-server"
           dockerfile: "python-server/Dockerfile"
