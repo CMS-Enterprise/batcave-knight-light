@@ -58,6 +58,7 @@ jobs:
       - uses: gatecheckdev/deploykit-action/kustomize@main
         with:
           image: ${{ needs.workflow_engine.outputs.full_image_tag }}
+          directory: batcave-knight-light-manifest
           service: "knight-light-server-go"
           service_directory: "impl"
           manifest_deploy_token: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
