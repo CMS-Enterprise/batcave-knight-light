@@ -46,3 +46,20 @@ jobs:
           dockerfile: "ui/Dockerfile"
           tag: ${{ steps.vars.outputs.full_image_tag }}
           bundle_publish_tag: ${{ steps.vars.outputs.full_bundle_tag }}
+
+  deploy_impl:
+    runs-on: ubuntu-latest
+    needs: workflow_engine
+    steps:
+      - name: Clone Manifest
+        uses: actions/checkout@v4
+        with:
+          repository: CMS-Enterprise/batcave-knight-light-manifest
+          ssh-key: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
+      - uses: gatecheckdev/deploykit-action/kustomize@main
+        with:
+          image: ${{ needs.workflow_engine.outputs.full_image_tag }}
+          directory: "."
+          service: "knight-light-ui"
+          service_directory: "impl"
+          manifest_deploy_token: ${{ secrets.MANIFEST_DEPLOY_TOKEN }}
