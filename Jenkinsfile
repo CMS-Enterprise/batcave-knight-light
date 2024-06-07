@@ -46,7 +46,10 @@ pipeline {
         container('workflow-engine') {
           sh 'git config --global --add safe.directory "$(pwd)"'
           sh 'podman login --compat-auth-file "$HOME/.docker/config.json" "$CONTAINER_REGISTRY" -u "$REGISTRY_USER" -p "$REGISTRY_TOKEN"'
-          sh 'workflow-engine run all --verbose --semgrep-experimental --cli-interface podman'
+          
+          ansiColor('xterm') {
+            sh 'workflow-engine run all --verbose --semgrep-experimental --cli-interface podman'
+          }
         }
       }
     }
