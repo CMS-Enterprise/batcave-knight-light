@@ -1,8 +1,19 @@
 pipeline {
-  agent any
-
   stages {
     stage('Build') {
+      agent {
+        kubernetes {
+          yaml """
+          apiVersion: v1
+          kind: Pod
+          spec:
+            containers:
+            - name: build
+              image: node:18
+          """
+        }
+      }
+
       steps {
         sh 'npm ci'
         sh 'npm run test:unit'
@@ -11,14 +22,13 @@ pipeline {
 
     stage('Delivery') {
       agent {
-        // Use a kubernetes pod with image ghcr.io/cms-enterprise/batcave/workflow-engine:podman-v0.0.1-rc.4
         kubernetes {
           yaml """
           apiVersion: v1
           kind: Pod
           spec:
             containers:
-            - name: podman
+            - name: workflow-engine
               image: ghcr.io/cms-enterprise/batcave/workflow-engine:podman-v0.0.1-rc.4
           """
         }
