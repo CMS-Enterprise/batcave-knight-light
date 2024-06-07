@@ -7,16 +7,20 @@ pipeline {
           apiVersion: v1
           kind: Pod
           spec:
+            restartPolicy: Never
             containers:
             - name: build
               image: node:18
+              command: ['tail', '-f', '/dev/null']
           """
         }
       }
 
       steps {
-        sh 'npm ci'
-        sh 'npm run test:unit'
+        container('build') {
+          sh 'npm ci'
+          sh 'npm run test:unit'
+        }
       }
     }
 
@@ -27,9 +31,11 @@ pipeline {
           apiVersion: v1
           kind: Pod
           spec:
+            restartPolicy: Never
             containers:
             - name: workflow-engine
               image: ghcr.io/cms-enterprise/batcave/workflow-engine:podman-v0.0.1-rc.4
+              command: ['tail', '-f', '/dev/null']
           """
         }
       }
@@ -44,8 +50,10 @@ pipeline {
       }
 
       steps {
-        sh 'podman login --compat-auth-file "$HOME/.docker/config.json" "$CONTAINER_REGISTRY" -u "$REGISTRY_USER" -p "$REGISTRY_TOKEN"'
-        sh 'workflow-engine run all --verbose --semgrep-experimental --cli-interface podman'
+        container('workflow-engine') {
+          sh 'podman login --compat-auth-file "$HOME/.docker/config.json" "$CONTAINER_REGISTRY" -u "$REGISTRY_USER" -p "$REGISTRY_TOKEN"'
+          sh 'workflow-engine run all --verbose --semgrep-experimental --cli-interface podman'
+        }
       }
     }
   }
