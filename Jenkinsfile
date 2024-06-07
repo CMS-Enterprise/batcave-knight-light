@@ -13,9 +13,6 @@ pipeline {
         - name: workflow-engine
           image: ghcr.io/cms-enterprise/batcave/workflow-engine:podman-v0.0.1-rc.16
           command: ['tail', '-f', '/dev/null']
-          securityContext:
-            # run as podman
-            runAsUser: 101
       """
     }
   }
@@ -44,11 +41,11 @@ pipeline {
 
       steps {
         container('workflow-engine') {
-          sh 'git config --global --add safe.directory "$(pwd)"'
-          sh 'podman login --compat-auth-file "$HOME/.docker/config.json" "$CONTAINER_REGISTRY" -u "$REGISTRY_USER" -p "$REGISTRY_TOKEN"'
-          
+          sh 'su podman -s /bin/sh -c "git config --global --add safe.directory \\"$(pwd)\\""'
+          sh 'su podman -s /bin/sh -c "podman login --compat-auth-file \\"$HOME/.docker/config.json\\" \\"$CONTAINER_REGISTRY\\" -u \\"$REGISTRY_USER\\" -p \\"$REGISTRY_TOKEN\\""'
+
           ansiColor('xterm') {
-            sh 'workflow-engine run all --verbose --semgrep-experimental --cli-interface podman'
+            sh 'su podman -s /bin/sh -c "workflow-engine run all --verbose --semgrep-experimental --cli-interface podman"'
           }
         }
       }
