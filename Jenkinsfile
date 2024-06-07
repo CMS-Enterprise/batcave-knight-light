@@ -21,8 +21,10 @@ pipeline {
     stage('Build') {
       steps {
         container('build') {
-          sh 'npm ci'
-          sh 'npm run test:unit'
+          dir('node-server') {
+            sh 'npm ci'
+            sh 'npm run test:unit'
+          }
         }
       }
     }
