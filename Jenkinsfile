@@ -11,7 +11,7 @@ pipeline {
           image: node:18
           command: ['tail', '-f', '/dev/null']
         - name: workflow-engine
-          image: ghcr.io/cms-enterprise/batcave/workflow-engine:podman-v0.0.1-rc.4
+          image: ghcr.io/cms-enterprise/batcave/workflow-engine:podman-v0.0.1-rc.16
           command: ['tail', '-f', '/dev/null']
       """
     }
