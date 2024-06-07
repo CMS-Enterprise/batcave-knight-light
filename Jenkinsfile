@@ -13,6 +13,9 @@ pipeline {
         - name: workflow-engine
           image: ghcr.io/cms-enterprise/batcave/workflow-engine:podman-v0.0.1-rc.16
           command: ['tail', '-f', '/dev/null']
+          securityContext:
+            # run as podman
+            runAsUser: 101
       """
     }
   }
