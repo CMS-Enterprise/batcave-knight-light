@@ -23,29 +23,27 @@ pipeline {
         container('build') {
           dir('node-server') {
             sh 'npm ci'
+          }
+        }
+      }
+    }
+
+    stage('Unit-Tests') {
+      steps {
+        container('build') {
+          dir('node-server') {
+            sh 'npm pkg set jest.coverageReporters='["lcov", "html", "text", "json", "json-summary"]' --json'
             sh 'npm run test:unit'
           }
         }
       }
     }
 
-    stage('Delivery') {
-      environment {
-        WFE_IMAGE_BUILD_DIR = 'node-server'
-        WFE_IMAGE_BUILD_DOCKERFILE = 'node-service/Dockerfile'
-        WFE_IMAGE_TAG = "artifactory.cloud.cms.gov/batcave-docker/ado-repositories/nightwing/knight-light/jenkins-knight-light/node-server:${GIT_COMMIT[0..6]}"
-        CONTAINER_REGISTRY = 'artifactory.cloud.cms.gov'
-        REGISTRY_USER = "$REGISTRY_USER"
-        REGISTRY_TOKEN = credentials("artifactory-registry-token")
-      }
-
+    stage('Lint') {
       steps {
-        container('workflow-engine') {
-          sh 'su podman -s /bin/sh -c "git config --global --add safe.directory \\"$(pwd)\\""'
-          sh 'su podman -s /bin/sh -c "podman login --compat-auth-file \\"$HOME/.docker/config.json\\" \\"$CONTAINER_REGISTRY\\" -u \\"$REGISTRY_USER\\" -p \\"$REGISTRY_TOKEN\\""'
-
-          ansiColor('xterm') {
-            sh 'su podman -s /bin/sh -c "workflow-engine run all --verbose --semgrep-experimental --cli-interface podman"'
+        container('build') {
+          dir('node-server') {
+            sh 'npm run lint'
           }
         }
       }
