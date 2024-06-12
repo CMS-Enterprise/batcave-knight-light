@@ -32,7 +32,6 @@ pipeline {
       steps {
         container('build') {
           dir('node-server') {
-            sh 'npm pkg set jest.coverageReporters='["lcov", "html", "text", "json", "json-summary"]' --json'
             sh 'npm run test:unit'
           }
         }
