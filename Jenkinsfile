@@ -8,11 +8,30 @@ pipeline {
         restartPolicy: Never
         containers:
         - name: node
-          image: node:18
-          command: ['tail', '-f', '/dev/null']
-        - name: go
-          image: golang:1.18
-          command: ['tail', '-f', '/dev/null']          
+          image: artifactory.cloud.cms.gov/docker/node:18
+          imagePullPolicy: Always
+          command:
+          - cat
+          tty: true
+          volumeMounts:
+          - mountPath: "/home/jenkins/agent"
+            name: "workspace-volume"
+            readOnly: false
+          workingDir: "/home/jenkins/agent"
+          resources:
+            limits:
+              memory: 3Gi
+        - name: gradle
+          image: artifactory.cloud.cms.gov/docker/amazoncorretto:17
+          imagePullPolicy: Always
+          command:
+          - cat
+          tty: true
+          volumeMounts:
+          - mountPath: "/home/jenkins/agent"
+            name: "workspace-volume"
+            readOnly: false
+          workingDir: "/home/jenkins/agent"
       """
     }
   }
@@ -20,31 +39,22 @@ pipeline {
   stages {
     stage('Parallel Execution') {
       parallel {
-        stage('Go') {
+        stage('Java') {
           stages {
             stage('Build') {  
               steps {
-                container('build') {
-                  dir('go-server') {
-                    sh 'go build'
+                container('gradle') {
+                  dir('java-server') {
+                    sh 'gradle build'
                   }
                 }
               }
             }
             stage('Unit-Tests') {
               steps {
-                container('build') {
-                  dir('go-server') {
-                    sh 'go test'
-                  }
-                }
-              }
-            }
-            stage('Lint') {
-              steps {
-                container('build') {
-                  dir('go-server') {
-                    sh 'go lint'
+                container('gradle') {
+                  dir('java-server') {
+                    sh 'gradle test jacocoTestReport'
                   }
                 }
               }
