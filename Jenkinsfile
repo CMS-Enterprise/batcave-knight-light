@@ -11,7 +11,7 @@ pipeline {
           image: node:18
           command: ['tail', '-f', '/dev/null']
         - name: go
-          image: golang:1.26
+          image: golang:1.18
           command: ['tail', '-f', '/dev/null']          
       """
     }
