@@ -21,8 +21,8 @@ pipeline {
           resources:
             limits:
               memory: 3Gi
-        - name: gradle
-          image: artifactory.cloud.cms.gov/docker/amazoncorretto:17
+        - name: maven
+          image: artifactory.cloud.cms.gov/docker/maven:3.9-amazoncorretto-17
           imagePullPolicy: Always
           command:
           - cat
@@ -43,18 +43,18 @@ pipeline {
           stages {
             stage('Build') {  
               steps {
-                container('gradle') {
+                container('maven') {
                   dir('java-server') {
-                    sh 'gradle build'
+                    sh 'mvn package -P prod -DskipTests=true'
                   }
                 }
               }
             }
             stage('Unit-Tests') {
               steps {
-                container('gradle') {
+                container('maven') {
                   dir('java-server') {
-                    sh 'gradle test jacocoTestReport'
+                    sh 'mvn clean test'
                   }
                 }
               }
