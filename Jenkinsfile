@@ -18,58 +18,62 @@ pipeline {
     stage('Parallel Execution') {
       parallel {
         stage('Go') {
-          stage('Build') {
-            steps {
-              container('build') {
-                dir('go-server') {
-                  sh 'go build'
+          stages {
+            stage('Build') {
+              steps {
+                container('build') {
+                  dir('go-server') {
+                    sh 'go build'
+                  }
                 }
               }
             }
-          }
-          stage('Unit-Tests') {
-            steps {
-              container('build') {
-                dir('go-server') {
-                  sh 'go test'
+            stage('Unit-Tests') {
+              steps {
+                container('build') {
+                  dir('go-server') {
+                    sh 'go test'
+                  }
                 }
               }
             }
-          }
-          stage('Lint') {
-            steps {
-              container('build') {
-                dir('go-server') {
-                  sh 'go lint'
+            stage('Lint') {
+              steps {
+                container('build') {
+                  dir('go-server') {
+                    sh 'go lint'
+                  }
                 }
               }
             }
           }
         }
         stage('NPM') {
-          stage('Build') {
-            steps {
-              container('build') {
-                dir('node-server') {
-                  sh 'npm ci'
+          stages {
+            stage('Build') {
+              steps {
+                container('build') {
+                  dir('node-server') {
+                    sh 'npm ci'
+                  }
                 }
               }
             }
-          }
-          stage('Unit-Tests') {
-            steps {
-              container('build') {
-                dir('node-server') {
-                  sh 'npm run test:unit'
+            stage('Unit-Tests') {
+              steps {
+                container('build') {
+                  dir('node-server') {
+                    sh 'npm run test:unit'
+                  }
                 }
               }
             }
-          }
-          stage('Lint') {
-            steps {
-              container('build') {
-                dir('node-server') {
-                  sh 'npm run lint'
+            stage('Lint') {
+              steps {
+                container('build') {
+                  dir('node-server') {
+                    sh 'npm run lint'
+                  }
                 }
               }
             }
