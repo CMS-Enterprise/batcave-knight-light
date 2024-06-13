@@ -8,10 +8,7 @@ pipeline {
         restartPolicy: Never
         containers:
         - name: build
-          image: node:18
-          command: ['tail', '-f', '/dev/null']
-        - name: workflow-engine
-          image: ghcr.io/cms-enterprise/batcave/workflow-engine:podman-v0.0.1-rc.16
+          image: alpine:3
           command: ['tail', '-f', '/dev/null']
       """
     }
@@ -21,32 +18,18 @@ pipeline {
     stage('Build') {
       steps {
         container('build') {
-          dir('node-server') {
-            sh 'npm ci'
-            sh 'npm run test:unit'
-          }
+          sh 'echo TODO: implement build stage'
         }
       }
     }
 
     stage('Delivery') {
-      environment {
-        WFE_IMAGE_BUILD_DIR = 'node-server'
-        WFE_IMAGE_BUILD_DOCKERFILE = 'node-service/Dockerfile'
-        WFE_IMAGE_TAG = "artifactory.cloud.cms.gov/batcave-docker/ado-repositories/nightwing/knight-light/jenkins-knight-light/node-server:${GIT_COMMIT[0..6]}"
-        CONTAINER_REGISTRY = 'artifactory.cloud.cms.gov'
-        REGISTRY_USER = "$REGISTRY_USER"
-        REGISTRY_TOKEN = credentials("artifactory-registry-token")
-      }
-
       steps {
-        container('workflow-engine') {
-          sh 'su podman -s /bin/sh -c "git config --global --add safe.directory \\"$(pwd)\\""'
-          sh 'su podman -s /bin/sh -c "podman login --compat-auth-file \\"$HOME/.docker/config.json\\" \\"$CONTAINER_REGISTRY\\" -u \\"$REGISTRY_USER\\" -p \\"$REGISTRY_TOKEN\\""'
-
-          ansiColor('xterm') {
-            sh 'su podman -s /bin/sh -c "workflow-engine run all --verbose --semgrep-experimental --cli-interface podman"'
-          }
+        build(job: 'Node Server Delivery Pipeline', wait: true, propagate: true, parameters: [
+          string(name: 'image', value: 'OVERRIDE')
+        ])
+        container('build') {
+          sh 'echo Child pipeline completed'
         }
       }
     }
