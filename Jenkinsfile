@@ -7,9 +7,12 @@ pipeline {
       spec:
         restartPolicy: Never
         containers:
-        - name: build
+        - name: node
           image: node:18
           command: ['tail', '-f', '/dev/null']
+        - name: go
+          image: golang:1.26
+          command: ['tail', '-f', '/dev/null']          
       """
     }
   }
@@ -19,7 +22,7 @@ pipeline {
       parallel {
         stage('Go') {
           stages {
-            stage('Build') {
+            stage('Build') {  
               steps {
                 container('build') {
                   dir('go-server') {
@@ -52,7 +55,7 @@ pipeline {
           stages {
             stage('Build') {
               steps {
-                container('build') {
+                container('node') {
                   dir('node-server') {
                     sh 'npm ci'
                   }
@@ -61,7 +64,7 @@ pipeline {
             }
             stage('Unit-Tests') {
               steps {
-                container('build') {
+                container('node') {
                   dir('node-server') {
                     sh 'npm run test:unit'
                   }
@@ -70,7 +73,7 @@ pipeline {
             }
             stage('Lint') {
               steps {
-                container('build') {
+                container('node') {
                   dir('node-server') {
                     sh 'npm run lint'
                   }
