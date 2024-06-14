@@ -23,7 +23,7 @@ def Map properties=[
         fileName: ""
     ],
     snyk: [
-        orgId: "${org_id}"
+        orgId: "batcave"
     ]
 ] 
 def sharedLibraryBranch
