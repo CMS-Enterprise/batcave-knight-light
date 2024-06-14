@@ -61,7 +61,7 @@ pipeline {
             }
           }
         }
-        stage('NPM') {
+        stage('Node-Server') {
           stages {
             stage('Build') {
               steps {
@@ -91,7 +91,38 @@ pipeline {
               }
             }
           }
-        }        
+        }  
+        stage('Node-UI') {
+          stages {
+            stage('Build') {
+              steps {
+                container('node') {
+                  dir('ui') {
+                    sh 'npm ci'
+                  }
+                }
+              }
+            }
+            stage('Unit-Tests') {
+              steps {
+                container('node') {
+                  dir('ui') {
+                    sh 'npm run test:unit'
+                  }
+                }
+              }
+            }
+            stage('Lint') {
+              steps {
+                container('node') {
+                  dir('ui') {
+                    sh 'npm run lint'
+                  }
+                }
+              }
+            }
+          }
+        }               
       }
     }
   }
