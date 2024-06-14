@@ -1,26 +1,26 @@
 def Map properties=[
-    emailRecipient: "${email_recipient}",
-    slackNotification: "${slack_notification}",
+    emailRecipient: "brian.fohl@intellibridge.us",
+    slackNotification: "",
     artifactName: "",
-    artifactoryProjectName: "${artifactory_project_name}",
-    artifactPackagePath: "${artifact_package_path}",
+    artifactoryProjectName: "batcave-knight-light",
+    artifactPackagePath: "",
     tech: "maven3.9",
-    javaVersion: "${java_version}",
-    buildArgs: "${build_args}",
-    testArgs: "${test_args}",
-    packageArgs: "${package_args}",
-    ghOrg: "${gh_org}",
-    adoIAMRole: "${ado_iam_role}",
+    javaVersion: "17",
+    buildArgs: "",
+    testArgs: "",
+    packageArgs: "$",
+    ghOrg: "CMSEnt",
+    adoIAMRole: "admin",
     sonarqube: [
-        projectKey: "${sq_project_key}"
+        projectKey: ""
     ],
     build: [
-        dockerargs: "${docker_args}",
-        artifactHost: "${artifact_host}",
-        workDir: "${work_directory}",
-        dockerFile: "${docker_file}",
-        zipPath: "${zip_path}",
-        fileName: "${file_name}"
+        dockerargs: "",
+        artifactHost: "",
+        workDir: ".",
+        dockerFile: "Dockerfile",
+        zipPath: "",
+        fileName: ""
     ],
     snyk: [
         orgId: "${org_id}"
