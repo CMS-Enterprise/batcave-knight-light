@@ -8,7 +8,7 @@ def Map properties=[
     javaVersion: "17",
     buildArgs: "",
     testArgs: "",
-    packageArgs: "$",
+    packageArgs: "",
     ghOrg: "CMSEnt",
     adoIAMRole: "admin",
     sonarqube: [
