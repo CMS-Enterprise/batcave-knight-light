@@ -52,12 +52,13 @@ pipeline {
       steps {
         sh 'env'
         echo "Building Image for commit ${GIT_COMMIT[0..7]}"
-        echo "scm userRemoteConfigs.url is ${scm.userRemoteConfigs[0].url}"
-        echo "scm userRemoteConfigs.refspec is ${scm.userRemoteConfigs[0].refspec}"
-        echo "scm userRemoteConfigs.credentialsId is ${scm.userRemoteConfigs[0].credentialsId}"
-        echo 'TODO: pass git configuration to child pipeline'
         build(job: 'Node Server Delivery', wait: true, propagate: true, parameters: [
-          string(name: 'tag', value: "${GIT_COMMIT[0..7]}")
+          string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+          string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+          string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          string(name: 'build_dir', value: 'node-server'),
+          string(name: 'dockerfile', value: 'node-server/Dockerfile')
         ])
         container('build') {
           echo 'Child pipeline completed'
