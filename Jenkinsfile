@@ -40,23 +40,21 @@ pipeline {
     stage('Parallel Execution') {
       parallel {
         stage('Java') {
-          parallel {
-            stages {
-              stage('Build') {  
-                steps {
-                  container('maven') {
-                    dir('java-server') {
-                      sh 'mvn package -P prod -DskipTests=true'
-                    }
+          stages {
+            stage('Build') {  
+              steps {
+                container('maven') {
+                  dir('java-server') {
+                    sh 'mvn package -P prod -DskipTests=true'
                   }
                 }
               }
-              stage('Unit-Tests') {
-                steps {
-                  container('maven') {
-                    dir('java-server') {
-                      sh 'mvn clean test'
-                    }
+            }
+            stage('Unit-Tests') {
+              steps {
+                container('maven') {
+                  dir('java-server') {
+                    sh 'mvn clean test'
                   }
                 }
               }
