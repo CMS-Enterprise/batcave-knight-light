@@ -36,6 +36,16 @@ pipeline {
     }
   }
 
+  triggers {
+    GenericWebhookTrigger(
+      token: 'batcave-knight-light',
+      causeString: 'Triggered by GitHub webhook',
+      printContributedVariables: true,
+      printPostContent: true,
+      slientResponse: false
+    )
+  }
+
   stages {
     stage('Parallel Execution') {
       parallel {
