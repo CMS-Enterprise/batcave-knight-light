@@ -42,7 +42,7 @@ pipeline {
       causeString: 'Triggered by GitHub webhook',
       printContributedVariables: true,
       printPostContent: true,
-      slientResponse: false
+      silentResponse: false
     )
   }
 
