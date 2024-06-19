@@ -50,8 +50,6 @@ pipeline {
 
     stage('Delivery') {
       steps {
-        sh 'env'
-        echo "Building Image for commit ${GIT_COMMIT[0..7]}"
         build(job: 'Node Server Delivery', wait: true, propagate: true, parameters: [
           string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
           string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
