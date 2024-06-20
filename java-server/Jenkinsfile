@@ -38,5 +38,23 @@ pipeline {
         }
       }
     }
+
+    stage('Delivery') {
+      steps {
+        sh 'env'
+        echo "Building Image for commit ${GIT_COMMIT[0..7]}"
+        build(job: 'Java Server Delivery', wait: true, propagate: true, parameters: [
+          string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+          string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+          string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          string(name: 'build_dir', value: 'java-server'),
+          string(name: 'dockerfile', value: 'java-server/Dockerfile')
+        ])
+        container('build') {
+          echo 'Child pipeline completed'
+        }
+      }
+    }    
   }
 }
