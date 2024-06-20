@@ -18,7 +18,7 @@ pipeline {
     stage('Build') {
       steps {
         container('maven') {
-          dir('node-server') {
+          dir('java-server') {
             sh 'mvn package'
           }
         }
@@ -30,7 +30,7 @@ pipeline {
         stage('Unit Test') {
           steps {
             container('maven') {
-              dir('node-server') {
+              dir('java-server') {
                 sh 'mvn test'
               }
             }
@@ -39,7 +39,7 @@ pipeline {
         stage('Lint') {
           steps {
             container('maven') {
-              dir('node-server') {
+              dir('java-server') {
                 sh 'mvn lint'
               }
             }
