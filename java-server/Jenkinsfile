@@ -40,7 +40,7 @@ pipeline {
           steps {
             container('maven') {
               dir('node-server') {
-                sh 'mvn lint
+                sh 'mvn lint'
               }
             }
           }
