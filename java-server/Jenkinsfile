@@ -1,0 +1,51 @@
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+      apiVersion: v1
+      kind: Pod
+      spec:
+        restartPolicy: Never
+        containers:
+        - name: maven
+          image: artifactory.cloud.cms.gov/docker/maven:3.8.5-openjdk-17
+          command: ['tail', '-f', '/dev/null']
+      """
+    }
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        container('maven') {
+          dir('node-server') {
+            sh 'mvn package'
+          }
+        }
+      }
+    }
+
+    stage ('Test') {
+      parallel {
+        stage('Unit Test') {
+          steps {
+            container('maven') {
+              dir('node-server') {
+                sh 'mvn test'
+              }
+            }
+          }
+        }
+        stage('Lint') {
+          steps {
+            container('maven') {
+              dir('node-server') {
+                sh 'mvn lint
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
