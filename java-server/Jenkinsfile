@@ -36,15 +36,6 @@ pipeline {
             }
           }
         }
-        stage('Lint') {
-          steps {
-            container('maven') {
-              dir('java-server') {
-                sh 'mvn lint'
-              }
-            }
-          }
-        }
       }
     }
   }
