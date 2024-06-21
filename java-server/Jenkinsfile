@@ -15,9 +15,9 @@ pipeline {
   }
 
   triggers {
-      GenericWebhookTrigger(
-          token: 'batcave-knight-light'
-      )
+    GenericTrigger(
+      token: 'batcave-knight-light'
+    )
   }
 
   stages {
