@@ -15,8 +15,12 @@ pipeline {
   }
 
   triggers {
-    GenericTrigger(
-      token: 'batcave-knight-light'
+    GenericWebhookTrigger(
+      token: 'batcave-knight-light',
+      causeString: 'Triggered by webhook',
+      printContributedVariables: true,
+      printPostContent: true,
+      silentResponse: false
     )
   }
 
