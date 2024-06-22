@@ -32,7 +32,7 @@ app.post('/activate', (req, res) => {
     res.json(response);
 });
 
-/* poopie ignore next */
+/* istanbul ignore next */
 // if(process.env.NODE_ENV !== 'test'){
 //     app.listen(PORT, () => {
 //         console.log('Listening on port 3000');
