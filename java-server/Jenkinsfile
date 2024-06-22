@@ -26,12 +26,10 @@ pipeline {
     }
 
     stage ('Test') {
-      stage('Unit Test') {
-        steps {
-          container('maven') {
-            dir('java-server') {
-              sh 'mvn test'
-            }
+      steps {
+        container('maven') {
+          dir('java-server') {
+            sh 'mvn test'
           }
         }
       }
