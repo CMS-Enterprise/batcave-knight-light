@@ -1,0 +1,54 @@
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+      apiVersion: v1
+      kind: Pod
+      spec:
+        restartPolicy: Never
+        containers:
+        - name: maven
+          image: artifactory.cloud.cms.gov/docker/maven:3.8.5-openjdk-17
+          command: ['tail', '-f', '/dev/null']
+      """
+    }
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        container('maven') {
+          dir('java-server') {
+            sh 'mvn package'
+          }
+        }
+      }
+    }
+
+    stage ('Test') {
+      steps {
+        container('maven') {
+          dir('java-server') {
+            sh 'mvn test'
+          }
+        }
+      }
+    }
+
+    stage('Delivery') {
+      steps {
+        build(job: 'Java Server Delivery', wait: true, propagate: true, parameters: [
+          string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+          string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+          string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          string(name: 'build_dir', value: 'java-server'),
+          string(name: 'dockerfile', value: 'java-server/Dockerfile')
+        ])
+        container('build') {
+          echo 'Child pipeline completed'
+        }
+      }
+    }  
+  }
+}
