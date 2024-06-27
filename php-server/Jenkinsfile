@@ -9,7 +9,7 @@ pipeline {
         containers:
         - name: build-php
           // image: artifactory.cloud.cms.gov/docker/node:18
-          image: artifactory.cloud.cms.gov/docker/drupal:php8.3-fpm-alpine3.20
+          image: artifactory.cloud.cms.gov/batcave-docker/ado-repositories/oeda/eppe/drupal-pipeline-image/jenkins:test
           command: ['tail', '-f', '/dev/null']
       """
     }
