@@ -9,7 +9,7 @@ pipeline {
         containers:
         - name: build-php
           // image: artifactory.cloud.cms.gov/docker/node:18
-          image: artifactory.cloud.cms.gov/docker/drupal:php8.2-fpm-alpine3.20
+          image: artifactory.cloud.cms.gov/docker/drupal:10.3.0-php8.2-fpm-alpine3.20
           command: ['tail', '-f', '/dev/null']
       """
     }
@@ -72,8 +72,8 @@ pipeline {
             ])
             container('build-php') {
                 echo 'Child pipeline completed'
-            }  
-        } 
+            }
+        }
       }
     }
   }
