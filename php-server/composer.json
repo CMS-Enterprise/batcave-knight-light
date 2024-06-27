@@ -50,11 +50,9 @@
     ],
     "require": {
         "php": "~8.2.0",
-        "ext-apcu": "*",
         "ext-dom": "*",
         "ext-json": "*",
         "ext-libxml": "*",
-        "ext-mysqli": "*",
         "ext-pdo": "*",
         "ext-simplexml": "*",
         "ext-zip": "*",
