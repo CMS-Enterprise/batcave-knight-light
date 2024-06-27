@@ -50,6 +50,7 @@
     ],
     "require": {
         "php": "~8.2.0",
+        "phpunit/phpunit": "v11.2.0",
         "ext-dom": "*",
         "ext-json": "*",
         "ext-libxml": "*",
@@ -275,8 +276,5 @@
     "require-dev": {
         "drupal/tokendebug": "1.x-dev",
         "friendsofphp/php-cs-fixer": "^3.4"
-    },
-    "scripts": {
-        "php-cs-fixer": "@php php-cs-fixer fix --ansi --verbose"
     }
 }
