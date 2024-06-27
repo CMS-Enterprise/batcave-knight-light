@@ -10,6 +10,12 @@ pipeline {
         - name: go
           image: artifactory.cloud.cms.gov/docker/golang:1.22-alpine
           command: ['tail', '-f', '/dev/null']
+          resources:
+            limits:
+              memory: "5Gi"
+            requests:
+              memory: "3Gi"
+
       """
     }
   }
