@@ -1,15 +1,24 @@
-# syntax=docker/dockerfile:1
+# Use the official PHP image as a base
+FROM php:8.2.20-fpm-alpine3.20
+# FROM artifactory.cloud.cms.gov/batcave-docker/ado-repositories/oeda/eppe/drupal-base-image:498016dd AS fpm-shared-dev
 
-FROM composer:lts as deps
-WORKDIR /app
-RUN --mount=type=bind,source=composer.json,target=composer.json \
-    --mount=type=bind,source=composer.lock,target=composer.lock \
-    --mount=type=cache,target=/tmp/cache \
-    composer install --no-dev --no-interaction
+# Set the working directory
+WORKDIR /var/www/html
 
-FROM php:8.2-apache as final
-RUN docker-php-ext-install pdo pdo_mysql
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY --from=deps app/vendor/ /var/www/html/vendor
-COPY ./src /var/www/html
-USER www-data
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy the application files
+COPY . .
+
+# Install dependencies
+RUN ls -ltr
+RUN pwd
+RUN which composer
+RUN composer install --no-progress --no-interaction --no-dev --optimize-autoloader
+
+# Expose the port on which the app will run
+EXPOSE 80
+
+# Command to run the application
+CMD ["php", "-S", "0.0.0.0:80", "-t", "."]
