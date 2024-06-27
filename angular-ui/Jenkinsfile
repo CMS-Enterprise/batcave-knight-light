@@ -1,6 +1,3 @@
-// groovylint-disable CompileStatic, LineLength, DuplicateStringLiteral, NestedBlockDepth, CouldBeSwitchStatement, Indentation, DuplicateNumberLiteral
-// vim: set sw=2 ts=2 filetype=groovy:
-
 pipeline {
   agent {
     kubernetes {
