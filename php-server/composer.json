@@ -277,11 +277,6 @@
         "drupal/tokendebug": "1.x-dev",
         "friendsofphp/php-cs-fixer": "^3.4"
     },
-    "autoload": {
-      "classmap": [
-        "web/modules/custom/eppe_core/src/Secrets.php"
-      ]
-    },
     "scripts": {
         "php-cs-fixer": "@php php-cs-fixer fix --ansi --verbose"
     }
