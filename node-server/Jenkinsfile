@@ -25,7 +25,7 @@ pipeline {
       }
     }
 
-    stage ('Test') {
+    stage('Test') {
       parallel {
         stage('Unit Test') {
           steps {
@@ -45,6 +45,24 @@ pipeline {
             }
           }
         }
+        stage('SAST') {
+          steps {
+            script {
+              def sastParameters = [
+                string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+                string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+                string(name: 'git_commit', value: "${GIT_COMMIT}"),
+                string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+              ]
+
+              if (env.CHANGE_ID) {
+                sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
+              }
+
+              build(job: 'Node Server SAST', wait: true, propagate: true, parameters: sastParameters)
+            }
+          }
+        }
       }
     }
 
@@ -54,13 +72,8 @@ pipeline {
           string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
           string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
           string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-          string(name: 'git_commit', value: "${GIT_COMMIT}"),
-          string(name: 'build_dir', value: 'node-server'),
-          string(name: 'dockerfile', value: 'node-server/Dockerfile')
+          string(name: 'git_commit', value: "${GIT_COMMIT}")
         ])
-        container('build') {
-          echo 'Child pipeline completed'
-        }
       }
     }
   }
