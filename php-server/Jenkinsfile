@@ -23,21 +23,6 @@ pipeline {
             sh 'cat /etc/os-release'
             sh 'ls -ltr'
             sh 'which php'
-            sh '''
-              php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-              php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-              php composer-setup.php
-              php -r "unlink('composer-setup.php');"
-            '''
-            sh '''
-            apk update && apk upgrade
-            apk add php-cli \
-                 php-json \
-                 php-mbstring \
-                 php-xml \
-                 php-xdebug
-            '''
-            sh 'mv composer.phar /usr/local/bin/composer'
             sh 'which composer'
             sh 'composer install --no-progress --no-interaction --no-dev --optimize-autoloader'
           }
@@ -45,30 +30,30 @@ pipeline {
       }
     }
 
-    // stage ('Test') {
-    //   parallel {
-    //     stage('Unit Test') {
-    //       steps {
-    //         container('build-php') {
-    //           dir('php-server') {
-    //             sh 'mkdir -p coverage && phpunit --log-junit coverage/unitreport.xml --coverage-html coverage tests/'
-    //           }
-    //         }
-    //       }
-    //     }
-    //     stage('Lint') {
-    //       steps {
-    //         container('build-php') {
-    //           dir('php-server') {
-    //             sh 'composer php-cs-fixer -- --dry-run'
-    //             sh 'composer phpstan'
-    //             sh 'composer rector -- --dry-run'
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    stage ('Test') {
+      parallel {
+        stage('Unit Test') {
+          steps {
+            container('build-php') {
+              dir('php-server') {
+                sh 'mkdir -p coverage && phpunit --log-junit coverage/unitreport.xml --coverage-html coverage tests/'
+              }
+            }
+          }
+        }
+        stage('Lint') {
+          steps {
+            container('build-php') {
+              dir('php-server') {
+                sh 'composer php-cs-fixer -- --dry-run'
+                sh 'composer phpstan'
+                sh 'composer rector -- --dry-run'
+              }
+            }
+          }
+        }
+      }
+    }
 
     stage('Delivery') {
       steps {
@@ -90,3 +75,21 @@ pipeline {
     }
   }
 }
+
+
+
+            // sh '''
+            //   php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+            //   php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+            //   php composer-setup.php
+            //   php -r "unlink('composer-setup.php');"
+            // '''
+            // sh '''
+            // apk update && apk upgrade
+            // apk add php-cli \
+            //      php-json \
+            //      php-mbstring \
+            //      php-xml \
+            //      php-xdebug
+            // '''
+            // sh 'mv composer.phar /usr/local/bin/composer'
