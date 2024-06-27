@@ -267,7 +267,6 @@
                 "      composer remove drupal/core-project-message"
             ]
         },
-        "patches-file": "composer.patches.json",
         "patchLevel": {
             "drupal/core": "-p2"
         },
