@@ -25,8 +25,8 @@ pipeline {
             sh 'which php'
             sh 'which composer'
             sh 'apk update && apk upgrade'
-            sh 'apk apk info git'
-            sh 'apk apk add git'
+            sh 'apk info git'
+            sh 'apk add git'
             sh 'composer install --no-progress --no-interaction --no-dev --optimize-autoloader --prefer-dist'
           }
         }
