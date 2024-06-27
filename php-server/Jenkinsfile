@@ -30,6 +30,7 @@ pipeline {
               php composer-setup.php
               php -r "unlink('composer-setup.php');"
             '''
+            sh 'mv composer.phar /usr/local/bin/composer'
             sh 'which composer'
             sh 'apk update && apk upgrade'
             sh 'apk info git'
