@@ -1,6 +1,7 @@
 # Use the official PHP image as a base
 # FROM php:8.2.20-fpm-alpine3.20
-FROM artifactory.cloud.cms.gov/docker/drupal:php8.3-fpm-alpine3.20 AS fpm-shared-dev
+# FROM artifactory.cloud.cms.gov/docker/drupal:php8.3-fpm-alpine3.20 AS fpm-shared-dev
+FROM artifactory.cloud.cms.gov/docker/drupal:php8.3-fpm-alpine3.20
 
 # Set the working directory
 WORKDIR /var/www/html
