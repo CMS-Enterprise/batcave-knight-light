@@ -9,7 +9,8 @@ pipeline {
         containers:
         - name: build-php
           // image: artifactory.cloud.cms.gov/docker/node:18
-          image: artifactory.cloud.cms.gov/docker/drupal:10.3.0-php8.2-fpm-alpine3.20
+          // image: artifactory.cloud.cms.gov/docker/drupal:10.3.0-php8.2-fpm-alpine3.20
+          image: artifactory.cloud.cms.gov/docker/php:8.2.20-fpm-alpine3.20
           command: ['tail', '-f', '/dev/null']
       """
     }
@@ -27,7 +28,6 @@ pipeline {
             sh 'apk update && apk upgrade'
             sh 'apk info git'
             sh 'apk add git'
-            sh 'composer require sebastian/diff:6.0.0'
             sh 'composer install --no-progress --no-interaction --no-dev --optimize-autoloader --prefer-dist'
           }
         }
