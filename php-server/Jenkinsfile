@@ -24,7 +24,7 @@ pipeline {
             sh 'ls -ltr'
             sh 'which php'
             sh 'which composer'
-            sh 'composer install --no-progress --no-interaction --no-dev --optimize-autoloader'
+            sh 'composer install --no-progress --no-interaction --no-dev --optimize-autoloader --prefer-dist'
           }
         }
       }
