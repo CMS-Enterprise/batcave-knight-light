@@ -49,7 +49,7 @@
         }
     ],
     "require": {
-        "php": "~8.2.0",
+        "php": "~8.3.0",
         "phpunit/phpunit": "v11.2.0",
         "ext-dom": "*",
         "ext-json": "*",
