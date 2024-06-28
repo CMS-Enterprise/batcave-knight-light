@@ -1,9 +1,6 @@
-FROM alpine:3.19 as build
+FROM maven:3-amazoncorretto-21 as build
 WORKDIR /app
 COPY . /app/
-
-RUN apk update
-RUN apk add maven
 
 RUN mvn clean install
 
