@@ -50,7 +50,7 @@
     ],
     "require": {
         "php": "~8.3.0",
-        "phpunit/phpunit": "v11.2.0",
+        "phpunit/phpunit": "11.2.5",
         "ext-dom": "*",
         "ext-json": "*",
         "ext-libxml": "*",

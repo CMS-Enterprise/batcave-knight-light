@@ -48,7 +48,7 @@ pipeline {
           steps {
             container('build-php') {
               dir('php-server') {
-                sh 'mkdir -p coverage && phpunit --log-junit coverage/unitreport.xml --coverage-html coverage tests/'
+                sh 'mkdir -p coverage &&  vendor/bin/phpunit --log-junit coverage/unitreport.xml --coverage-html coverage tests/'
               }
             }
           }
