@@ -55,13 +55,15 @@ pipeline {
                 }
                 stage('Lint') {
                     steps {
-                        container('build') {
-                            dir("${TARGET_DIR}") {
-                                sh '''
-                                echo "Linting '${TARGET_DIR}' with arguments '${LINT_ARGS}'"
-                                python -m pylint --version
-                                find . -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
-                                '''
+                        catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {   
+                            container('build') {
+                                dir("${TARGET_DIR}") {
+                                    sh '''
+                                    echo "Linting '${TARGET_DIR}' with arguments '${LINT_ARGS}'"
+                                    python -m pylint --version
+                                    find . -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
+                                    '''
+                                }
                             }
                         }
                     }
