@@ -5,9 +5,9 @@ pipeline {
             apiVersion: v1
             kind: Pod
             spec:
-            restartPolicy: Never
-            containers:
-            - name: build
+              restartPolicy: Never
+              containers:
+              - name: build
                 image: python:3.11-alpine
                 command: ['tail', '-f', '/dev/null']
             """
