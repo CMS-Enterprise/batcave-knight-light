@@ -55,10 +55,14 @@ pipeline {
                 }
                 stage('Lint') {
                     steps {
-                        dir("${TARGET_DIR}") {
-                            sh '''
-                            python -m pylint .
-                            '''
+                        container('build') {
+                            dir("${TARGET_DIR}") {
+                                sh '''
+                                echo "Linting '${TARGET_DIR}' with arguments '${lint_args}'"
+                                python -m pylint --version
+                                find . -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
+                                '''
+                            }
                         }
                     }
                 }
