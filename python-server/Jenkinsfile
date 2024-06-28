@@ -1,0 +1,55 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml """
+            apiVersion: v1
+            kind: Pod
+            spec:
+            restartPolicy: Never
+            containers:
+            - name: build
+                image: python:3.11-alpine
+                command: ['tail', '-f', '/dev/null']
+            """
+        }
+    }
+
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '1', numToKeepStr: '10'))
+    }
+
+    stages{
+        stage('Build Python') {
+          steps {
+            container('build') {
+              sh 'python -m pip install --upgrade pip'
+              dir('python-server') {
+                sh '''
+                pip install -r requirements.txt
+                python -m coverage --version
+                python -m coverage run -m pytest
+                python -m coverage report
+                python -m coverage xml 
+                '''
+                archiveArtifacts artifacts: "coverage.xml", allowEmptyArchive: true
+              }
+            }
+          }
+        }
+        stage('Delivery') {
+            steps {
+                build(job: 'Python Server Delivery', wait: true, propagate: true, parameters: [
+                    string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+                    string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+                    string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+                    string(name: 'git_commit', value: "${GIT_COMMIT}"),
+                    string(name: 'build_dir', value: 'python-server'),
+                    string(name: 'dockerfile', value: 'python-server/Dockerfile')
+                ])
+                container('build') {
+                    echo 'Child pipeline completed'
+                }
+            }
+        }
+    }
+}
