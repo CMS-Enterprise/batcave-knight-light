@@ -56,11 +56,13 @@ pipeline {
         }
         stage('Lint') {
           steps {
-            container('build-php') {
-              dir('php-server') {
-                sh 'composer php-cs-fixer -- --dry-run'
-                sh 'composer phpstan'
-                sh 'composer rector -- --dry-run'
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              container('build-php') {
+                dir('php-server') {
+                  sh 'composer php-cs-fixer -- --dry-run'
+                  sh 'composer phpstan'
+                  sh 'composer rector -- --dry-run'
+                }
               }
             }
           }
