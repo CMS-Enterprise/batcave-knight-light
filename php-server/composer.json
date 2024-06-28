@@ -63,7 +63,6 @@
         "mikehaertl/phpwkhtmltopdf": "~2.1",
         "npm-asset/datatables": "^1.10",
         "npm-asset/select2": "^4.0",
-        "oomphinc/composer-installers-extender": "^2.0",
         "palantirnet/drupal-rector": "^0.20.1",
         "phpoffice/phpspreadsheet": "^1.23 || ^2.0",
         "reflection/validator": "^1.0"
