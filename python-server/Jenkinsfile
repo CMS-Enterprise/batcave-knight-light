@@ -57,7 +57,7 @@ pipeline {
                     steps {
                         dir("${TARGET_DIR}") {
                             sh '''
-                            find . -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
+                            python -m pylint .
                             '''
                         }
                     }
