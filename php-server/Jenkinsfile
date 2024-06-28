@@ -36,6 +36,7 @@ pipeline {
             sh 'apk info git'
             sh 'apk add git'
             sh 'composer install --no-progress --no-interaction --no-dev --optimize-autoloader --prefer-dist'
+            sh 'which phpunit'
           }
         }
       }
