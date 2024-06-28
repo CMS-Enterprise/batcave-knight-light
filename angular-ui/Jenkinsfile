@@ -1,0 +1,67 @@
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+      apiVersion: v1
+      kind: Pod
+      spec:
+        restartPolicy: Never
+        containers:
+        - name: build
+          image: artifactory.cloud.cms.gov/docker/node:18
+          command: ['tail', '-f', '/dev/null']
+      """
+    }
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        container('build') {
+          dir('angular-ui') {
+            sh 'npm ci && npm run build'
+          }
+        }
+      }
+    }
+
+    stage('Test') {
+      parallel {
+        stage('Unit Test') {
+          steps {
+            container('build') {
+              dir('angular-ui') {
+                sh 'npm run test'
+              }
+            }
+          }
+        }
+        stage('Lint') {
+          steps {
+            container('build') {
+              dir('angular-ui') {
+                sh 'npm run lint'
+              }
+            }
+          }
+        }
+      }
+    }
+
+    stage('Delivery') {
+      steps {
+        build(job: 'Angular UI Delivery', wait: true, propagate: true, parameters: [
+          string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+          string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+          string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          string(name: 'build_dir', value: 'angular-ui'),
+          string(name: 'dockerfile', value: 'angular-ui/Dockerfile')
+        ])
+        container('build') {
+          echo 'Child pipeline completed'
+        }
+      }
+    }
+  }
+}
