@@ -48,7 +48,7 @@ pipeline {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               container('build-php') {
                 dir('php-server') {
-                  sh 'mkdir -p coverage &&  vendor/bin/phpunit --log-junit coverage/unitreport.xml --coverage-html coverage tests/'
+                  sh 'mkdir -p coverage && vendor/bin/phpunit --log-junit coverage/unitreport.xml tests/'
                 }
               }
             }
@@ -59,9 +59,8 @@ pipeline {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               container('build-php') {
                 dir('php-server') {
-                  sh 'composer vendor/friendsofphp/php-cs-fixer -- --dry-run'
-                  sh 'composer phpstan'
-                  sh 'composer rector -- --dry-run'
+                  sh 'vendor/bin/phpstan analyse vendor/palantirnet/drupal-rector/phpstan.neon'
+                  sh 'vendor/bin/rector -- --dry-run'
                 }
               }
             }
