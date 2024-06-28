@@ -45,14 +45,13 @@ pipeline {
       parallel {
         stage('Unit Test') {
           steps {
-            catchError {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               container('build-php') {
                 dir('php-server') {
                   sh 'mkdir -p coverage &&  vendor/bin/phpunit --log-junit coverage/unitreport.xml --coverage-html coverage tests/'
                 }
               }
             }
-            echo currentBuild.result
           }
         }
         stage('Lint') {
