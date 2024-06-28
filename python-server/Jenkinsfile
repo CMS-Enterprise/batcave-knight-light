@@ -32,6 +32,10 @@ pipeline {
                 python -m coverage xml 
                 '''
                 archiveArtifacts artifacts: "coverage.xml", allowEmptyArchive: true
+
+                script {
+                    cobertura coberturaReportFile: "coverage.xml"
+                }
               }
             }
           }
