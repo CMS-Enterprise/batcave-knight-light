@@ -58,7 +58,7 @@ pipeline {
     stage('Delivery') {
       steps {
         catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
-            build(job: 'Php Delivery', wait: true, propagate: true, parameters: [
+            build(job: 'PHP Delivery Pipeline', wait: true, propagate: true, parameters: [
                 string(name: 'image', value: "artifactory.cloud.cms.gov/docker/drupal"),
                 string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
                 string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
