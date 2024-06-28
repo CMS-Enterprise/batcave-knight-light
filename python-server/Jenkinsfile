@@ -14,6 +14,11 @@ pipeline {
         }
     }
 
+    environment {
+        TARGET_DIR = "python-server"
+        LINT_ARGS = "--disable=missing-docstring --disable=invalid-name"
+    }
+
     options {
         buildDiscarder(logRotator(daysToKeepStr: '1', numToKeepStr: '10'))
     }
@@ -23,22 +28,41 @@ pipeline {
           steps {
             container('build') {
               sh 'python -m pip install --upgrade pip'
-              dir('python-server') {
+              dir("${TARGET_DIR}") {
                 sh '''
-                pip install -r requirements.txt
-                python -m coverage --version
-                python -m coverage run -m pytest
-                python -m coverage report
-                python -m coverage xml 
+                pip install -r requirements-dev.txt
                 '''
-                archiveArtifacts artifacts: "coverage.xml", allowEmptyArchive: true
-
-                script {
-                    cobertura coberturaReportFile: "coverage.xml"
-                }
               }
             }
           }
+        }
+        stage('Test & Lint'){
+            parallel {
+                stage('Test') {
+                    steps {
+                        container('build') {
+                            dir("${TARGET_DIR}") {
+                                sh '''
+                                python -m coverage --version
+                                python -m coverage run -m pytest
+                                python -m coverage report
+                                python -m coverage xml 
+                                '''
+                                archiveArtifacts artifacts: "coverage.xml", allowEmptyArchive: true
+                            }
+                        }
+                    }
+                }
+                stage('Lint') {
+                    steps {
+                        dir("${TARGET_DIR}") {
+                            sh '''
+                            find ${TARGET_DIR} -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
+                            '''
+                        }
+                    }
+                }
+            }
         }
         stage('Delivery') {
             steps {
