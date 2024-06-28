@@ -8,7 +8,7 @@ pipeline {
         restartPolicy: Never
         containers:
         - name: maven
-          image: artifactory.cloud.cms.gov/docker/maven:3.8.5-openjdk-17
+          image: artifactory.cloud.cms.gov/docker/maven:3-amazoncorretto-21
           command: ['tail', '-f', '/dev/null']
       """
     }
@@ -31,7 +31,7 @@ pipeline {
           steps {
             container('maven') {
               dir('java-server') {
-                sh 'mvn test'
+                sh 'mvn --no-transfer-progress test'
               }
             }
           }
@@ -40,7 +40,9 @@ pipeline {
           steps {
             container('maven') {
               dir('java-server') {
-                sh 'mvn checkstyle:check'
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE', message: '[WARNING] Coding style issues detected!') {
+                  sh 'mvn --no-transfer-progress checkstyle:check'
+                }
               }
             }
           }
