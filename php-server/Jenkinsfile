@@ -59,7 +59,7 @@ pipeline {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               container('build-php') {
                 dir('php-server') {
-                  sh 'composer php-cs-fixer -- --dry-run'
+                  sh 'composer vendor/friendsofphp/php-cs-fixer -- --dry-run'
                   sh 'composer phpstan'
                   sh 'composer rector -- --dry-run'
                 }
@@ -74,13 +74,13 @@ pipeline {
       steps {
         catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
             build(job: 'Php Delivery', wait: true, propagate: true, parameters: [
-                string(name: 'image', value: "php:8.2.20-fpm-alpine3.20"),
+                string(name: 'image', value: "artifactory.cloud.cms.gov/docker/drupal:10.3.0-php8.3-fpm-alpine3.20"),
                 string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
                 string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
                 string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
                 string(name: 'git_commit', value: "${GIT_COMMIT}"),
                 string(name: 'build_dir', value: 'php-server'),
-                string(name: 'dockerfile', value: 'php-server/Dockerfile')
+                string(name: 'dockerfile', value: 'php-server/dockerfile')
             ])
             container('build-php') {
                 echo 'Child pipeline completed'
@@ -108,3 +108,4 @@ pipeline {
             //      php-xdebug
             // '''
             // sh 'mv composer.phar /usr/local/bin/composer'
+vendor/friendsofphp/php-cs-fixer
