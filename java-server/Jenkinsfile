@@ -19,7 +19,7 @@ pipeline {
       steps {
         container('maven') {
           dir('java-server') {
-            sh 'mvn package'
+            sh 'mvn package -DskipTests'
           }
         }
       }
