@@ -1,0 +1,54 @@
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+      apiVersion: v1
+      kind: Pod
+      spec:
+        restartPolicy: Never
+        containers:
+        - name: go
+          image: artifactory.cloud.cms.gov/docker/golang:1.22-alpine
+          command: ['tail', '-f', '/dev/null']
+      """
+    }
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        container('go') {
+          dir('go-server') {
+            sh 'go build ./...'
+          }
+        }
+      }
+    }
+
+    stage ('Test') {
+      steps {
+        container('go') {
+          dir('go-server') {
+            sh 'go test ./...'
+          }
+        }
+      }
+    }
+
+    stage('Delivery') {
+      steps {
+        build(job: 'Go Server Delivery', wait: true, propagate: true, parameters: [
+          string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+          string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+          string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          string(name: 'build_dir', value: 'go-server'),
+          string(name: 'dockerfile', value: 'go-server/Dockerfile')
+        ])
+        container('build') {
+          echo 'Child pipeline completed'
+        }
+      }
+    }
+  }
+}
