@@ -43,7 +43,10 @@ pipeline {
           string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
           string(name: 'git_commit', value: "${GIT_COMMIT}"),
           string(name: 'build_dir', value: 'go-server'),
-          string(name: 'dockerfile', value: 'go-server/Dockerfile')
+          string(name: 'dockerfile', value: 'go-server/Dockerfile'),
+          string(name: 'image_name', value: 'ttl.sh/b162b85a-5bf9-4940-9281-fdb6d92e16ec:1h')
+          string(name: 'image_registry_auth_json', value: credentials('batcave-artifactory-auth-json'))
+          booleanParam(name: 'image_push_enabled', value: true)
         ])
         container('build') {
           echo 'Child pipeline completed'
