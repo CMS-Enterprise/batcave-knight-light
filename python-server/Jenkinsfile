@@ -1,107 +1,108 @@
 pipeline {
-    agent {
-        kubernetes {
-            yaml """
-            apiVersion: v1
-            kind: Pod
-            spec:
-              restartPolicy: Never
-              containers:
-              - name: build
-                image: python:3.11-alpine
-                command: ['tail', '-f', '/dev/null']
-            """
+  agent {
+    kubernetes {
+      yaml """
+      apiVersion: v1
+      kind: Pod
+      spec:
+        restartPolicy: Never
+        containers:
+        - name: build
+          image: artifactory.cloud.cms.gov/docker/python:3.11-alpine
+          command: ['tail', '-f', '/dev/null']
+      """
+    }
+  }
+
+  environment {
+    TARGET_DIR = "python-server"
+    LINT_ARGS = "--disable=missing-docstring --disable=invalid-name"
+  }
+
+  options {
+    buildDiscarder(logRotator(daysToKeepStr: '1', numToKeepStr: '10'))
+  }
+
+  stages {
+    stage('Build Python') {
+      steps {
+        container('build') {
+          sh 'python -m pip install --upgrade pip'
+          dir("${TARGET_DIR}") {
+            sh '''
+            pip install -r requirements-dev.txt
+            '''
+          }
         }
+      }
     }
 
-    environment {
-        TARGET_DIR = "python-server"
-        LINT_ARGS = "--disable=missing-docstring --disable=invalid-name"
-    }
-
-    options {
-        buildDiscarder(logRotator(daysToKeepStr: '1', numToKeepStr: '10'))
-    }
-
-    stages{
-        stage('Build Python') {
+    stage('Test & Lint') {
+      parallel {
+        stage('Test') {
           steps {
             container('build') {
-              sh 'python -m pip install --upgrade pip'
               dir("${TARGET_DIR}") {
                 sh '''
-                pip install -r requirements-dev.txt
+                python -m coverage --version
+                python -m coverage run -m pytest
+                python -m coverage report
+                python -m coverage xml
                 '''
+                archiveArtifacts artifacts: "coverage.xml", allowEmptyArchive: true
               }
             }
           }
         }
-        stage('Test & Lint'){
-            parallel {
-                stage('Test') {
-                    steps {
-                        container('build') {
-                            dir("${TARGET_DIR}") {
-                                sh '''
-                                python -m coverage --version
-                                python -m coverage run -m pytest
-                                python -m coverage report
-                                python -m coverage xml 
-                                '''
-                                archiveArtifacts artifacts: "coverage.xml", allowEmptyArchive: true
-                            }
-                        }
-                    }
-                }
-                stage('Lint') {
-                    steps {
-                        catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {   
-                            container('build') {
-                                dir("${TARGET_DIR}") {
-                                    sh '''
-                                    echo "Linting '${TARGET_DIR}' with arguments '${LINT_ARGS}'"
-                                    python -m pylint --version
-                                    find . -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
-                                    '''
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('SAST') {
-                    steps {
-                        script {
-                            def sastParameters = [
-                                string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
-                                string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-                                string(name: 'git_commit', value: "${GIT_COMMIT}"),
-                                string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
-                            ]
 
-                            if (env.CHANGE_ID) {
-                                sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
-                            }
+        stage('Lint') {
+          steps {
+            catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
+              container('build') {
+                dir("${TARGET_DIR}") {
+                  sh '''
+                  echo "Linting '${TARGET_DIR}' with arguments '${LINT_ARGS}'"
+                  python -m pylint --version
+                  find . -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
+                  '''
+                }
+              }
+            }
+          }
+        }
 
-                            build(job: 'Python Server SAST', wait: true, propagate: true, parameters: sastParameters)
-                        }
-                    }
-                }
+        stage('SAST') {
+          steps {
+            script {
+              def sastParameters = [
+                string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+                string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+                string(name: 'git_commit', value: "${GIT_COMMIT}"),
+                string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+              ]
+
+              if (env.CHANGE_ID) {
+                sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
+              }
+
+              build(job: 'Python Server SAST', wait: true, propagate: true, parameters: sastParameters)
             }
+          }
         }
-        stage('Delivery') {
-            steps {
-                build(job: 'Python Server Delivery', wait: true, propagate: true, parameters: [
-                    string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
-                    string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
-                    string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-                    string(name: 'git_commit', value: "${GIT_COMMIT}"),
-                    string(name: 'build_dir', value: 'python-server'),
-                    string(name: 'dockerfile', value: 'python-server/Dockerfile')
-                ])
-                container('build') {
-                    echo 'Child pipeline completed'
-                }
-            }
-        }
+      }
     }
+
+    stage('Delivery') {
+      steps {
+        build(job: 'Python Server Delivery', wait: true, propagate: true, parameters: [
+          string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+          string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+          string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          string(name: 'build_dir', value: 'python-server'),
+          string(name: 'dockerfile', value: 'python-server/Dockerfile')
+        ])
+      }
+    }
+  }
 }

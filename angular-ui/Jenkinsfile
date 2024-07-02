@@ -76,9 +76,6 @@ pipeline {
           string(name: 'build_dir', value: 'angular-ui'),
           string(name: 'dockerfile', value: 'angular-ui/Dockerfile')
         ])
-        container('build') {
-          echo 'Child pipeline completed'
-        }
       }
     }
   }

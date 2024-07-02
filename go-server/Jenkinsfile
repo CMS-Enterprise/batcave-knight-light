@@ -45,9 +45,6 @@ pipeline {
           string(name: 'build_dir', value: 'go-server'),
           string(name: 'dockerfile', value: 'go-server/Dockerfile')
         ])
-        container('build') {
-          echo 'Child pipeline completed'
-        }
       }
     }
   }
