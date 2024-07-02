@@ -8,7 +8,7 @@ pipeline {
         restartPolicy: Never
         containers:
         - name: maven
-          image: artifactory.cloud.cms.gov/docker/maven:3.8.5-openjdk-17
+          image: artifactory.cloud.cms.gov/docker/maven:3-amazoncorretto-21
           command: ['tail', '-f', '/dev/null']
       """
     }
@@ -19,17 +19,50 @@ pipeline {
       steps {
         container('maven') {
           dir('java-server') {
-            sh 'mvn package'
+            sh 'mvn --no-transfer-progress package'
           }
         }
       }
     }
 
-    stage ('Test') {
-      steps {
-        container('maven') {
-          dir('java-server') {
-            sh 'mvn test'
+    stage('Test') {
+      parallel {
+        stage('Unit Test') {
+          steps {
+            container('maven') {
+              dir('java-server') {
+                sh 'mvn --no-transfer-progress test'
+              }
+            }
+          }
+        }
+        stage('Lint') {
+          steps {
+            container('maven') {
+              dir('java-server') {
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE', message: '[WARNING] Coding style issues detected!') {
+                  sh 'mvn --no-transfer-progress checkstyle:check'
+                }
+              }
+            }
+          }
+        }
+        stage('SAST') {
+          steps {
+            script {
+              def sastParameters = [
+                string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+                string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+                string(name: 'git_commit', value: "${GIT_COMMIT}"),
+                string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+              ]
+
+              if (env.CHANGE_ID) {
+                sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
+              }
+
+              build(job: 'Java Server SAST', wait: true, propagate: true, parameters: sastParameters)
+            }
           }
         }
       }
@@ -45,9 +78,6 @@ pipeline {
           string(name: 'build_dir', value: 'java-server'),
           string(name: 'dockerfile', value: 'java-server/Dockerfile')
         ])
-        container('build') {
-          echo 'Child pipeline completed'
-        }
       }
     }  
   }

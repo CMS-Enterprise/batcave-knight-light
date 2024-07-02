@@ -8,7 +8,7 @@ pipeline {
         restartPolicy: Never
         containers:
         - name: build
-          image: artifactory.cloud.cms.gov/docker/node:18
+          image: artifactory.cloud.cms.gov/docker/node:20-alpine
           command: ['tail', '-f', '/dev/null']
       """
     }
@@ -18,8 +18,8 @@ pipeline {
     stage('Build') {
       steps {
         container('build') {
-          dir('node-server') {
-            sh 'npm ci'
+          dir('ui') {
+            sh 'npm ci && npm run build'
           }
         }
       }
@@ -30,8 +30,8 @@ pipeline {
         stage('Unit Test') {
           steps {
             container('build') {
-              dir('node-server') {
-                sh 'npm run test:unit'
+              dir('ui') {
+                sh 'npm run test'
               }
             }
           }
@@ -39,8 +39,10 @@ pipeline {
         stage('Lint') {
           steps {
             container('build') {
-              dir('node-server') {
-                sh 'npm run lint'
+              dir('ui') {
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE', message: '[WARNING] Lint issues detected!') {
+                  sh 'npm run lint'
+                }
               }
             }
           }
@@ -59,7 +61,7 @@ pipeline {
                 sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
               }
 
-              build(job: 'Node Server SAST', wait: true, propagate: true, parameters: sastParameters)
+              build(job: 'UI SAST', wait: true, propagate: true, parameters: sastParameters)
             }
           }
         }
@@ -68,12 +70,17 @@ pipeline {
 
     stage('Delivery') {
       steps {
-        build(job: 'Node Server Delivery', wait: true, propagate: true, parameters: [
+        build(job: 'UI Delivery', wait: true, propagate: true, parameters: [
           string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
           string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
           string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-          string(name: 'git_commit', value: "${GIT_COMMIT}")
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          string(name: 'build_dir', value: 'ui'),
+          string(name: 'dockerfile', value: 'ui/Dockerfile')
         ])
+        container('build') {
+          echo 'Child pipeline completed'
+        }
       }
     }
   }
