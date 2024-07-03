@@ -1,10 +1,10 @@
 FROM node:alpine AS build
 
 WORKDIR /app
-COPY package*.json angular.json eslint.config.js tsconfig.*.json tsconfig.json /app/
-RUN npm ci
+COPY package.json .
+RUN npm install
 
-COPY . /app/
+COPY . .
 RUN npm run build
 
 
