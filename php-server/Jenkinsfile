@@ -20,7 +20,7 @@ pipeline {
         container('build-php') {
           dir('php-server') {
             sh 'cat /etc/os-release'
-            sh 'ls -ltr'
+            sh 'php -v'
             sh 'composer install --no-progress --no-interaction --no-dev --optimize-autoloader --prefer-dist'
           }
         }
