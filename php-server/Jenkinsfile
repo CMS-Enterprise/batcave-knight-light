@@ -72,6 +72,7 @@ pipeline {
             }
         }
       }
+    }
     stage('Deployment') {
       steps {
         catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
@@ -90,7 +91,6 @@ pipeline {
             }
         }
       }
-    }
     }
   }
 }
