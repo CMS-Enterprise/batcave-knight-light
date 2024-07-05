@@ -37,7 +37,7 @@ pipeline {
       }
     }
 
-    stage('Test & Lint') {
+    stage('Test/Lint/SAST') {
       parallel {
         stage('Test') {
           steps {
@@ -101,6 +101,21 @@ pipeline {
           string(name: 'git_commit', value: "${GIT_COMMIT}"),
           string(name: 'build_dir', value: 'python-server'),
           string(name: 'dockerfile', value: 'python-server/Dockerfile')
+        ])
+      }
+    }
+    stage('Deployment') {
+      steps {
+        // The job name here corresponds to the name assigned to the instance of the Deployment
+        // Pipeline created in Jenkins from the Deployment Pipeline Template.
+        build(job: 'Python Server Deployment', wait: true, propagate: true, parameters: [
+          string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+          string(name: 'environment_path', value: 'dev'),
+          string(name: 'target_service', value: 'batcave-knight-light-python-server'),
+          string(name: 'image_registry', value: "artifactory.cloud.cms.gov/batcave-docker/ado-repositories/nightwing/knight-light/jenkins-knight-light/python-server"),
+          string(name: 'tag', value: "${GIT_COMMIT[0..7]}")
         ])
       }
     }
