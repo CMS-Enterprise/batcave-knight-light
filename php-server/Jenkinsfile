@@ -77,8 +77,8 @@ pipeline {
       steps {
         catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
             build(job: 'PHP Server Deployment', wait: true, propagate: true, parameters: [
-                string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
-                string(name: 'git_branch', value: "${GIT_BRANCH}"),
+                string(name: 'git_manifest_repository', value: "${scm.userRemoteConfigs[0].url}"),
+                string(name: 'git_manifest_branch', value: "${GIT_BRANCH}"),
                 string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
                 string(name: 'git_user_email', value: "your-email@example.com"),
                 string(name: 'environment_path', value: 'dev'),
