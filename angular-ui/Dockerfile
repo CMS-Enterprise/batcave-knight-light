@@ -4,12 +4,7 @@ WORKDIR /app
 COPY package.json .
 RUN npm install
 
-COPY  angular.json \
-      eslint.config.js \
-      tsconfig.*.json \
-      lib \
-      spec \
-      src /app/
+COPY . .
 RUN npm run build
 
 
