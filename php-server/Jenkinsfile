@@ -58,7 +58,7 @@ pipeline {
     stage('Delivery') {
       steps {
         catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
-            build(job: 'PHP-Server-Delivery', wait: true, propagate: true, parameters: [
+            build(job: 'PHP/PHP-Server-Delivery', wait: true, propagate: true, parameters: [
                 string(name: 'image', value: "artifactory.cloud.cms.gov/docker/drupal"),
                 string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
                 string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
@@ -76,7 +76,7 @@ pipeline {
     stage('Deployment') {
       steps {
         catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
-            build(job: 'PHP-Server-Deployment', wait: true, propagate: true, parameters: [
+            build(job: 'PHP/PHP-Server-Deployment', wait: true, propagate: true, parameters: [
                 string(name: 'git_manifest_repository', value: "${scm.userRemoteConfigs[0].url}"),
                 string(name: 'git_manifest_branch', value: "${GIT_BRANCH}"),
                 string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
