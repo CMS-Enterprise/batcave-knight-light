@@ -16,34 +16,11 @@ pipeline {
 
     environment {
         // Initialize default values
-        GIT_MANIFEST_REPOSITORY = ''
-        GIT_MANIFEST_BRANCH = ''
+        GIT_MANIFEST_REPOSITORY = "${params.git_manifest_repository}"
+        GIT_MANIFEST_BRANCH = "${params.git_manifest_branch}"
     }
 
     stages {
-        stage('Determine Upstream Trigger') {
-            steps {
-                script {
-                    def upstreamProjectCount = 0
-                    currentBuild.upstreamBuilds?.each { b ->
-                        upstreamProjectCount++
-                    }
-                    if (upstreamProjectCount == 0) {
-                        echo "Not an upstream project"
-                    } else {
-                        echo "Upstream project detected"
-                        // Ensure we only set manifest parameters from specific upstream job
-                        currentBuild.upstreamBuilds.each { b ->
-                            if (b.fullDisplayName.contains("Delivery")) {
-                                env.GIT_MANIFEST_REPOSITORY = b.buildVariables.git_manifest_repository ?: params.git_manifest_repository
-                                env.GIT_MANIFEST_BRANCH = b.buildVariables.git_manifest_branch ?: params.git_manifest_branch
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Build PHP') {
             steps {
                 container('build-php') {
@@ -127,8 +104,8 @@ pipeline {
             steps {
                 catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
                     build(job: 'PHP-Server/PHP-Server-Deployment', wait: true, propagate: true, parameters: [
-                        string(name: 'git_manifest_repository', value: env.GIT_MANIFEST_REPOSITORY ?: params.git_manifest_repository),
-                        string(name: 'git_manifest_branch', value: env.GIT_MANIFEST_BRANCH ?: params.git_manifest_branch),
+                        string(name: 'git_manifest_repository', value: env.GIT_MANIFEST_REPOSITORY),
+                        string(name: 'git_manifest_branch', value: env.GIT_MANIFEST_BRANCH),
                         string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
                         string(name: 'git_user_name', value: "your-user-name"),
                         string(name: 'git_user_email', value: "your-email@example.com"),
