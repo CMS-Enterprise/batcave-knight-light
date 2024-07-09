@@ -64,6 +64,7 @@ pipeline {
         stage('SAST') {
           steps {
             script {
+              catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
               def sastParameters = [
                 string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
                 string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
@@ -79,6 +80,7 @@ pipeline {
             }
           }
         }
+      }
 
 
         stage('Delivery') {
