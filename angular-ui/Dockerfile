@@ -1,8 +1,8 @@
-FROM node:alpine AS base
+FROM artifactory.cloud.cms.gov/docker/node:18 AS base
 
 WORKDIR /app
-COPY package.json .
-RUN npm install
+COPY package*.json .
+RUN npm ci
 
 
 FROM base AS build
@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build
 
 
-FROM node:alpine
+FROM artifactory.cloud.cms.gov/docker/node:18
 
 WORKDIR /app
 COPY --from=build /app /app
