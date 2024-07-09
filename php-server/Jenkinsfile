@@ -108,7 +108,7 @@ pipeline {
                     build(job: 'PHP-Server/PHP-Server-Deployment', wait: true, propagate: true, parameters: [
                         string(name: 'git_manifest_repository', value: "https://github.com/CMS-Enterprise/batcave-knight-light-manifest.git"),
                         string(name: 'git_manifest_branch', value: "kustomize"),
-                        string(name: 'git_credentials', value: "batcave-knight-light-manifests-deploy-key"),
+                        string(name: 'git_manifest_credentials', value: "batcave-knight-light-manifests-deploy-key"),
                         string(name: 'git_user_name', value: "your-user-name"),
                         string(name: 'git_user_email', value: "your-email@example.com"),
                         string(name: 'environment_path', value: 'dev'),
