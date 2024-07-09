@@ -14,6 +14,13 @@ pipeline {
     }
   }
 
+  environment {
+    IS_UPSTREAM_TRIGGERED = sh(
+      script: '''echo ${BUILD_CAUSE_UPSTREAMTRIGGER}''',
+      returnStdout: true
+    ).trim()
+  }
+
   stages {
     stage('Build PHP') {
       steps {
@@ -57,39 +64,50 @@ pipeline {
 
     stage('Delivery') {
       steps {
-        catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
-            build(job: 'PHP-Server/PHP-Server-Delivery', wait: true, propagate: true, parameters: [
-                string(name: 'image', value: "artifactory.cloud.cms.gov/docker/drupal"),
-                string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
-                string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
-                string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-                string(name: 'git_commit', value: "${GIT_COMMIT}"),
-                string(name: 'build_dir', value: 'php-server'),
-                string(name: 'dockerfile', value: 'php-server/dockerfile')
-            ])
-            container('build-php') {
-                echo 'Child pipeline completed'
-            }
+        catchError(buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
+          build(job: 'PHP-Server/PHP-Server-Delivery', wait: true, propagate: true, parameters: [
+            string(name: 'image', value: "artifactory.cloud.cms.gov/docker/drupal"),
+            string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+            string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+            string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+            string(name: 'git_commit', value: "${GIT_COMMIT}"),
+            string(name: 'build_dir', value: 'php-server'),
+            string(name: 'dockerfile', value: 'php-server/dockerfile')
+          ])
+          container('build-php') {
+            echo 'Child pipeline completed'
+          }
         }
       }
     }
+
     stage('Deployment') {
       steps {
-        catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
+        catchError(buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
+          script {
+            def gitManifestRepository = params.git_repository
+            def gitManifestBranch = params.git_branch
+
+            if (env.IS_UPSTREAM_TRIGGERED == 'true') {
+              gitManifestRepository = params.git_manifest_repository
+              gitManifestBranch = params.git_manifest_branch
+            }
+
             build(job: 'PHP-Server/PHP-Server-Deployment', wait: true, propagate: true, parameters: [
-                string(name: 'git_manifest_repository', value: "${scm.userRemoteConfigs[0].url}"),
-                string(name: 'git_manifest_branch', value: "${GIT_BRANCH}"),
-                string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-                string(name: 'git_user_name', value: "your-user-name"),
-                string(name: 'git_user_email', value: "your-email@example.com"),
-                string(name: 'environment_path', value: 'dev'),
-                string(name: 'target_service', value: 'php-server'),
-                string(name: 'image', value: 'artifactory.cloud.cms.gov/batcave-docker/ado-repositories/batcave-knight-light/php-server/jenkins/php'),
-                string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+              string(name: 'git_manifest_repository', value: "${gitManifestRepository}"),
+              string(name: 'git_manifest_branch', value: "${gitManifestBranch}"),
+              string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+              string(name: 'git_user_name', value: "your-user-name"),
+              string(name: 'git_user_email', value: "your-email@example.com"),
+              string(name: 'environment_path', value: 'dev'),
+              string(name: 'target_service', value: 'php-server'),
+              string(name: 'image', value: 'artifactory.cloud.cms.gov/batcave-docker/ado-repositories/batcave-knight-light/php-server/jenkins/php'),
+              string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
             ])
             container('kustomize') {
-                echo 'Child pipeline completed'
+              echo 'Child pipeline completed'
             }
+          }
         }
       }
     }
