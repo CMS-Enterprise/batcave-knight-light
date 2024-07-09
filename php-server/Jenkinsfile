@@ -14,10 +14,6 @@ pipeline {
     }
   }
 
-  environment {
-    UPSTREAM_JOB_NAME = env.BUILD_CAUSE == 'UPSTREAMTRIGGER' ? env.UPSTREAM_PROJECT : null
-    UPSTREAM_BUILD_NUMBER = env.BUILD_CAUSE == 'UPSTREAMTRIGGER' ? env.UPSTREAM_BUILD : null
-  }
 
   stages {
     stage('Build PHP') {
@@ -86,7 +82,7 @@ pipeline {
             def gitManifestRepository = params.git_repository
             def gitManifestBranch = params.git_branch
 
-            if (env.BUILD_CAUSE == 'UPSTREAMTRIGGER') {
+            if (currentBuild.upstreamBuilds?.size() > 0) {
               gitManifestRepository = params.git_manifest_repository
               gitManifestBranch = params.git_manifest_branch
             }
