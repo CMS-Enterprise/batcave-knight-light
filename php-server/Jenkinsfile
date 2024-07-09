@@ -15,10 +15,8 @@ pipeline {
   }
 
   environment {
-    IS_UPSTREAM_TRIGGERED = sh(
-      script: '''echo ${BUILD_CAUSE_UPSTREAMTRIGGER}''',
-      returnStdout: true
-    ).trim()
+    UPSTREAM_JOB_NAME = env.BUILD_CAUSE == 'UPSTREAMTRIGGER' ? env.UPSTREAM_PROJECT : null
+    UPSTREAM_BUILD_NUMBER = env.BUILD_CAUSE == 'UPSTREAMTRIGGER' ? env.UPSTREAM_BUILD : null
   }
 
   stages {
@@ -88,7 +86,7 @@ pipeline {
             def gitManifestRepository = params.git_repository
             def gitManifestBranch = params.git_branch
 
-            if (env.IS_UPSTREAM_TRIGGERED == 'true') {
+            if (env.BUILD_CAUSE == 'UPSTREAMTRIGGER') {
               gitManifestRepository = params.git_manifest_repository
               gitManifestBranch = params.git_manifest_branch
             }
