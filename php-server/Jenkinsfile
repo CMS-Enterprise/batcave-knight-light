@@ -88,8 +88,8 @@ pipeline {
             }
 
             build(job: 'PHP-Server/PHP-Server-Deployment', wait: true, propagate: true, parameters: [
-              string(name: 'git_manifest_repository', value: "${gitManifestRepository}"),
-              string(name: 'git_manifest_branch', value: "${gitManifestBranch}"),
+              string(name: 'git_manifest_repository', value: "${gitManifestRepository ?: params.git_manifest_repository}"),
+              string(name: 'git_manifest_branch', value: "${gitManifestBranch ?: params.git_manifest_branch}"),
               string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
               string(name: 'git_user_name', value: "your-user-name"),
               string(name: 'git_user_email', value: "your-email@example.com"),
