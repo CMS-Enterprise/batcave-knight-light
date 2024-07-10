@@ -14,6 +14,11 @@ pipeline {
     }
   }
 
+  environment {
+    IMAGE_NAME = 'artifactory.cloud.cms.gov/batcave-docker/ado-repositories/nightwing/knight-light/jenkins-knight-light/node-server'
+    IMAGE_TAG = "${GIT_COMMIT[0..7]}"
+  }
+
   stages {
     stage('Build') {
       steps {
@@ -69,10 +74,20 @@ pipeline {
     stage('Delivery') {
       steps {
         build(job: 'Node Server Delivery', wait: true, propagate: true, parameters: [
-          string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+          string(name: 'image', value: "${env.IMAGE_NAME}"),
+          string(name: 'tag', value: "${env.IMAGE_TAG}"),
           string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
           string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
           string(name: 'git_commit', value: "${GIT_COMMIT}")
+        ])
+      }
+    }
+
+    stage('Deployment') {
+      steps {
+        build(job: 'Node Server Deployment', wait: true, propagate: true, parameters: [
+          string(name: 'image', value: "${env.IMAGE_NAME}"),
+          string(name: 'tag', value: "${env.IMAGE_TAG}")
         ])
       }
     }
