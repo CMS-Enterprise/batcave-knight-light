@@ -20,8 +20,8 @@
 # Go workspace file
 go.work
 
-# # Generated Files
-# .DS_Store
-# .DS_Store?
-# .idea
-# .vs
+# Generated Files
+.DS_Store
+.DS_Store?
+.idea
+.vs
