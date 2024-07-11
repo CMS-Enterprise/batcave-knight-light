@@ -1,0 +1,20 @@
+build:
+    mkdir -p bin
+    go build -o ./bin .
+
+# unit testing with coverage
+test:
+    go test -cover ./...
+
+# golangci-lint view only
+lint:
+    golangci-lint run --fast
+
+# golangci-lint fix linting errors and format if possible
+fix:
+    golangci-lint run --fast --fix
+
+upgrade:
+    git status --porcelain | grep -q . && echo "Repository is dirty, commit changes before upgrading." && exit 1 || exit 0
+    go get -u ./...
+    go mod tidy
