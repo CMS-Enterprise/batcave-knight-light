@@ -13,7 +13,10 @@ pipeline {
       """
     }
   }
-
+  environment {
+    IMAGE_NAME = 'artifactory.cloud.cms.gov/batcave-docker/ado-repositories/nightwing/knight-light/jenkins-knight-light/java-server'
+    IMAGE_TAG = "${GIT_COMMIT[0..7]}"
+  }
   stages {
     stage('Build') {
       steps {
@@ -71,7 +74,7 @@ pipeline {
     stage('Delivery') {
       steps {
         build(job: 'Java Server Delivery', wait: true, propagate: true, parameters: [
-          string(name: 'tag', value: "${GIT_COMMIT[0..7]}"),
+          string(name: 'tag', value: "${env.IMAGE_TAG}"),
           string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
           string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
           string(name: 'git_commit', value: "${GIT_COMMIT}"),
@@ -79,6 +82,16 @@ pipeline {
           string(name: 'dockerfile', value: 'java-server/Dockerfile')
         ])
       }
-    }  
-  }
+    }
+    stage('Deployment') {
+    steps {
+        catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
+            build(job: 'Java Server Deployment', wait: true, propagate: true, parameters: [
+              string(name: 'image', value: "${env.IMAGE_NAME}"),
+              string(name: 'tag', value: "${env.IMAGE_TAG}")
+            ])
+        }
+    }
+  } 
+ }
 }
