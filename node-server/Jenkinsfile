@@ -16,7 +16,8 @@ pipeline {
 
   environment {
     IMAGE_NAME = 'artifactory.cloud.cms.gov/batcave-docker/ado-repositories/nightwing/knight-light/jenkins-knight-light/node-server'
-    IMAGE_TAG = "${GIT_COMMIT[0..7]}"
+    IMAGE_TAG = "${TAG_NAME ?: GIT_COMMIT[0..7]}"
+    ENABLE_PUBLISH = "${TAG_NAME ? true : (GIT_BRANCH == 'main')}"
   }
 
   stages {
@@ -78,16 +79,33 @@ pipeline {
           string(name: 'tag', value: "${env.IMAGE_TAG}"),
           string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
           string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-          string(name: 'git_commit', value: "${GIT_COMMIT}")
+          string(name: 'git_commit', value: "${GIT_COMMIT}"),
+          booleanParam(name: 'image_push_enabled', value: env.ENABLE_PUBLISH == 'true')
         ])
       }
     }
 
-    stage('Deployment') {
+    stage('Deploy Dev') {
+      when {
+        branch 'main'
+      }
       steps {
         build(job: 'Node Server Deployment', wait: true, propagate: true, parameters: [
           string(name: 'image', value: "${env.IMAGE_NAME}"),
           string(name: 'tag', value: "${env.IMAGE_TAG}")
+        ])
+      }
+    }
+
+    stage('Deploy Test') {
+      when {
+        tag pattern: 'v[0-9.]+(-.*)?', comparator: 'REGEXP'
+      }
+      steps {
+        build(job: 'Node Server Deployment', wait: true, propagate: true, parameters: [
+          string(name: 'image', value: "${env.IMAGE_NAME}"),
+          string(name: 'tag', value: "${env.IMAGE_TAG}"),
+          string(name: 'environment_path', value: 'test')
         ])
       }
     }
