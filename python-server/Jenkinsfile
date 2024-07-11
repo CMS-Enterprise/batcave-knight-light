@@ -8,7 +8,7 @@ pipeline {
         restartPolicy: Never
         containers:
         - name: build
-          image: artifactory.cloud.cms.gov/docker/python:3.11-alpine
+          image: artifactory.cloud.cms.gov/docker/python:3.12-alpine
           command: ['tail', '-f', '/dev/null']
       """
     }
@@ -27,10 +27,10 @@ pipeline {
     stage('Build Python') {
       steps {
         container('build') {
-          sh 'python -m pip install --upgrade pip'
+          sh 'python -m pip install --upgrade pip && python -m pip install pipenv'
           dir("${TARGET_DIR}") {
             sh '''
-            pip install -r requirements-dev.txt
+            pipenv install --deploy --ignore-pipfile
             '''
           }
         }
@@ -44,10 +44,10 @@ pipeline {
             container('build') {
               dir("${TARGET_DIR}") {
                 sh '''
-                python -m coverage --version
-                python -m coverage run -m pytest
-                python -m coverage report
-                python -m coverage xml
+                pipenv run python -m coverage --version
+                pipenv run python -m coverage run -m pytest
+                pipenv run python -m coverage report
+                pipenv run python -m coverage xml
                 '''
                 archiveArtifacts artifacts: "coverage.xml", allowEmptyArchive: true
               }
@@ -62,7 +62,7 @@ pipeline {
                 dir("${TARGET_DIR}") {
                   sh '''
                   echo "Linting '${TARGET_DIR}' with arguments '${LINT_ARGS}'"
-                  python -m pylint --version
+                  pipenv run python -m pylint --version
                   find . -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
                   '''
                 }
