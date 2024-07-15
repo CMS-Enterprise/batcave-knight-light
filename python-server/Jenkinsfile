@@ -64,7 +64,7 @@ pipeline {
                   sh '''
                   echo "Linting '${TARGET_DIR}' with arguments '${LINT_ARGS}'"
                   pipenv run python -m pylint --version
-                  find . -type f -iname "*.py" | grep -vE ".cache" | xargs python -m pylint ${LINT_ARGS}
+                  find . -type f -iname "*.py" | grep -vE ".cache" | xargs pipenv run python -m pylint ${LINT_ARGS}
                   '''
                 }
               }
