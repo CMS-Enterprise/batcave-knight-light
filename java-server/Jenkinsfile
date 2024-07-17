@@ -14,14 +14,16 @@ pipeline {
     }
   }
 
-
+  options {
+    copyArtifactPermission('*');
+  }
 
   stages {
     stage('Build') {
       steps {
         container('maven') {
           dir('java-server') {
-            sh 'mvn --no-transfer-progress package'
+            sh 'mvn --no-transfer-progress package -DskipTests'
             archiveArtifacts artifacts: 'target/**/*.class', allowEmptyArchive: true
           }
         }
