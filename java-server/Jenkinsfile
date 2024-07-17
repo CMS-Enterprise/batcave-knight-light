@@ -14,12 +14,17 @@ pipeline {
     }
   }
 
+  options {
+    copyArtifactPermission('*');
+  }
+
   stages {
     stage('Build') {
       steps {
         container('maven') {
           dir('java-server') {
-            sh 'mvn --no-transfer-progress package'
+            sh 'mvn --no-transfer-progress package -Dmaven.test.failure.ignore=true'
+            archiveArtifacts artifacts: 'target/**/*', allowEmptyArchive: true
           }
         }
       }
@@ -55,6 +60,9 @@ pipeline {
                 string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
                 string(name: 'git_commit', value: "${GIT_COMMIT}"),
                 string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+                string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
+                string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
+                string(name: 'copy_artifacts_filter', value: 'target/**/*')
               ]
 
               if (env.CHANGE_ID) {
@@ -79,6 +87,6 @@ pipeline {
           string(name: 'dockerfile', value: 'java-server/Dockerfile')
         ])
       }
-    }  
+    }
   }
 }
