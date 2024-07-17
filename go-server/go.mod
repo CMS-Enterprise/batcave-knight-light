@@ -1,4 +1,4 @@
-module knight-light-server
+module go-server
 
 go 1.22.1
 

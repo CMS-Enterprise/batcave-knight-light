@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-
-	"knight-light-server/api"
+	"go-server/api"
 )
 
 func main() {
