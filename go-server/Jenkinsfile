@@ -35,6 +35,7 @@ pipeline {
         container('go') {
           dir('go-server') {
             sh 'go test -coverprofile=coverage.out ./...'
+            archiveArtifacts artifacts: "coverage.out", allowEmptyArchive: true
           }
         }
       }
