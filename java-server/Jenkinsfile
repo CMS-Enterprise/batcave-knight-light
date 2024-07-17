@@ -62,7 +62,7 @@ pipeline {
                 string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
                 string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
                 string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
-                string(name: 'copy_artifacts_filter', value: 'java-server/target/**/*.class')
+                string(name: 'copy_artifacts_filter', value: 'target/**/*.class')
               ]
 
               if (env.CHANGE_ID) {
