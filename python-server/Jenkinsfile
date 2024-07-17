@@ -21,6 +21,7 @@ pipeline {
 
   options {
     buildDiscarder(logRotator(daysToKeepStr: '1', numToKeepStr: '10'))
+    copyArtifactPermission('*');
   }
 
   stages {
