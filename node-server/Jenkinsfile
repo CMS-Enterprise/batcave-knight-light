@@ -14,6 +14,11 @@ pipeline {
     }
   }
 
+  options {
+    buildDiscarder(logRotator(daysToKeepStr: '1', numToKeepStr: '10'))
+    copyArtifactPermission('*');
+  }
+
   environment {
     IMAGE_NAME = 'artifactory.cloud.cms.gov/batcave-docker/ado-repositories/nightwing/knight-light/jenkins-knight-light/node-server'
     IMAGE_TAG = "${TAG_NAME ?: GIT_COMMIT[0..7]}"
@@ -38,6 +43,7 @@ pipeline {
             container('build') {
               dir('node-server') {
                 sh 'npm run test:unit'
+                archiveArtifacts artifacts: "coverage/**/*", allowEmptyArchive: true
               }
             }
           }
@@ -59,6 +65,9 @@ pipeline {
                 string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
                 string(name: 'git_commit', value: "${GIT_COMMIT}"),
                 string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+                string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
+                string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
+                string(name: 'copy_artifacts_filter', value: 'coverage/**/*')
               ]
 
               if (env.CHANGE_ID) {
