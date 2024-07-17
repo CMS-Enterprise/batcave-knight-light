@@ -24,7 +24,7 @@ pipeline {
         container('maven') {
           dir('java-server') {
             sh 'mvn --no-transfer-progress package -DskipTests'
-            archiveArtifacts artifacts: 'target/*', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'target/**/*', allowEmptyArchive: true
           }
         }
       }
@@ -62,7 +62,7 @@ pipeline {
                 string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
                 string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
                 string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
-                string(name: 'copy_artifacts_filter', value: 'target/*')
+                string(name: 'copy_artifacts_filter', value: 'target/**/*')
               ]
 
               if (env.CHANGE_ID) {
