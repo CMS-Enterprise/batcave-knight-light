@@ -71,6 +71,7 @@ pipeline {
             }
           }
         }
+      }
     }
 
    stage('SAST') {
@@ -94,7 +95,6 @@ pipeline {
        }
      }
    }
-}
 
     stage('Delivery') {
       steps {
