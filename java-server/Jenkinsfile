@@ -23,7 +23,7 @@ pipeline {
       steps {
         container('maven') {
           dir('java-server') {
-            sh 'mvn --no-transfer-progress package -DskipTests'
+            sh 'mvn --no-transfer-progress package -Dmaven.test.failure.ignore=true'
             archiveArtifacts artifacts: 'target/**/*', allowEmptyArchive: true
           }
         }
