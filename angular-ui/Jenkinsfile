@@ -36,6 +36,11 @@ pipeline {
           steps {
             container('build') {
               dir('angular-ui') {
+                sh 'apt-get update'
+                sh 'apt-get install software-properties-common'
+                sh 'add-apt-repository ppa:canonical-chromium-builds/stage'
+                sh 'apt-get update'
+                sh 'apt-get install chromium-browser '
                 sh 'npm run test:coverage'
                 archiveArtifacts artifacts: "coverage/**/*", allowEmptyArchive: true
               }
