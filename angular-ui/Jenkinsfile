@@ -36,11 +36,10 @@ pipeline {
           steps {
             container('build') {
               dir('angular-ui') {
+                sh 'wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+                sh 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list'
                 sh 'apt-get update'
-                sh 'apt-get install software-properties-common -y'
-                sh 'add-apt-repository ppa:canonical-chromium-builds/stage'
-                sh 'apt-get update'
-                sh 'apt-get install chromium-browser -y'
+                sh 'apt-get install google-chrome-stable'
                 sh 'npm run test:coverage'
                 archiveArtifacts artifacts: "coverage/**/*", allowEmptyArchive: true
               }
