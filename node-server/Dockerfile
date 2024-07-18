@@ -1,9 +1,17 @@
-FROM alpine:3.18.5
+FROM node:18-alpine
+
 WORKDIR /app
-COPY . /app/
+
+RUN apk add --no-cache npm
+
+COPY package*.json .
+
+ENV NODE_ENV=production
+RUN npm ci
+
+COPY index.js .
+
 EXPOSE 3000
 
-RUN apk add --update npm
-RUN npm install express
-
-CMD ["node", "index.js"]
+ENTRYPOINT ["node"]
+CMD ["index.js"]

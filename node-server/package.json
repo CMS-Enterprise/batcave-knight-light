@@ -4,6 +4,7 @@
   "description": "knightlight server written in nodeJS",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test:unit": "jest --coverage",
     "lint": "eslint *.js"
   },
@@ -14,11 +15,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2",
-    "jest": "^29.7.0",
-    "supertest": "^6.3.3"
+    "express": "^4.19.2"
   },
   "devDependencies": {
-    "eslint": "^9.5.0"
+    "eslint": "^9.5.0",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
   }
 }
