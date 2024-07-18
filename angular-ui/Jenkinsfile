@@ -14,6 +14,11 @@ pipeline {
     }
   }
 
+  options {
+    buildDiscarder(logRotator(daysToKeepStr: '1', numToKeepStr: '10'))
+    copyArtifactPermission('*');
+  }
+
   stages {
     stage('Build') {
       steps {
@@ -31,7 +36,8 @@ pipeline {
           steps {
             container('build') {
               dir('angular-ui') {
-                sh 'npm run test'
+                sh 'npm run test:coverage'
+                archiveArtifacts artifacts: "coverage/**/*", allowEmptyArchive: true
               }
             }
           }
@@ -53,6 +59,9 @@ pipeline {
                 string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
                 string(name: 'git_commit', value: "${GIT_COMMIT}"),
                 string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+                string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
+                string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
+                string(name: 'copy_artifacts_filter', value: 'coverage/**/*')
               ]
 
               if (env.CHANGE_ID) {
