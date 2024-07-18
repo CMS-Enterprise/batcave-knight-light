@@ -36,7 +36,7 @@ pipeline {
       }
     }
 
-    stage('Test') {
+    stage('Test & Lint') {
       parallel {
         stage('Unit Test') {
           steps {
@@ -57,26 +57,27 @@ pipeline {
             }
           }
         }
-        stage('SAST') {
-          steps {
-            script {
-              def sastParameters = [
-                string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
-                string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-                string(name: 'git_commit', value: "${GIT_COMMIT}"),
-                string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
-                string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
-                string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
-                string(name: 'copy_artifacts_filter', value: 'coverage/**/*')
-              ]
+      }
+    }
 
-              if (env.CHANGE_ID) {
-                sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
-              }
+    stage('SAST') {
+      steps {
+        script {
+          def sastParameters = [
+            string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+            string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+            string(name: 'git_commit', value: "${GIT_COMMIT}"),
+            string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+            string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
+            string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
+            string(name: 'copy_artifacts_filter', value: 'coverage/**/*')
+          ]
 
-              build(job: 'Node Server SAST', wait: true, propagate: true, parameters: sastParameters)
-            }
+          if (env.CHANGE_ID) {
+            sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
           }
+
+          build(job: 'Node Server SAST', wait: true, propagate: true, parameters: sastParameters)
         }
       }
     }
