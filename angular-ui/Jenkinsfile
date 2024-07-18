@@ -39,7 +39,7 @@ pipeline {
                 sh 'wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
                 sh 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list'
                 sh 'apt-get update'
-                sh 'apt-get install google-chrome-stable'
+                sh 'apt-get install google-chrome-stable -y'
                 sh 'npm run test:coverage'
                 archiveArtifacts artifacts: "coverage/**/*", allowEmptyArchive: true
               }
