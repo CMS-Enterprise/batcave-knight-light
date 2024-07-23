@@ -19,8 +19,8 @@ ENV KNIGHT_LIGHT_PORT 8080
 
 WORKDIR /app
 
-COPY --from=build /app/bin/knight-light-server .
+COPY --from=build /app/bin/go-server .
 
 EXPOSE 8080
 
-CMD [ "/app/knight-light-server" ]
+CMD [ "/app/go-server" ]
