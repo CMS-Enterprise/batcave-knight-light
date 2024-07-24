@@ -1,9 +1,4 @@
 pipeline {
-  parameters {
-    string(name: 'platform', defaultValue: 'linux/amd64', description: 'A comma separated list of platforms to build the container image for (e.g., linux/amd64,linux/arm64).')
-    string(name: 'arch', defaultValue: 'amd64', description: 'Target architecture to build the container image for (e.g., amd64,arm64).')
-  }
-
   agent {
     kubernetes {
       yaml """
@@ -13,17 +8,8 @@ pipeline {
         restartPolicy: Never
         containers:
         - name: build
-          image: artifactory.cloud.cms.gov/docker/library/node:18-alpine3.18
+          image: artifactory.cloud.cms.gov/docker/node:18
           command: ['tail', '-f', '/dev/null']
-          imagePullPolicy: Always
-          env:
-          - name: TARGETPLATFORM
-            value: "${params.platform}"
-          - name: ARCH
-            value: "${params.arch}"
-        nodeSelector:
-          kubernetes.io/os: linux
-          kubernetes.io/arch: "${params.arch}"
       """
     }
   }
@@ -38,7 +24,7 @@ pipeline {
       steps {
         container('build') {
           dir('angular-ui') {
-            sh 'npm install && npm run build'
+            sh 'npm ci && npm run build'
           }
         }
       }
@@ -46,20 +32,20 @@ pipeline {
 
     stage('Test & Lint') {
       parallel {
-        // stage('Unit Test') {
-        //   steps {
-        //     container('build') {
-        //       dir('angular-ui') {
-        //         sh 'wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
-        //         sh 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list'
-        //         sh 'apt-get update'
-        //         sh 'apt-get install google-chrome-stable -y'
-        //         sh 'npm run test:coverage'
-        //         archiveArtifacts artifacts: "coverage/**/*", allowEmptyArchive: true
-        //       }
-        //     }
-        //   }
-        // }
+        stage('Unit Test') {
+          steps {
+            container('build') {
+              dir('angular-ui') {
+                sh 'wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
+                sh 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list'
+                sh 'apt-get update'
+                sh 'apt-get install google-chrome-stable -y'
+                sh 'npm run test:coverage'
+                archiveArtifacts artifacts: "coverage/**/*", allowEmptyArchive: true
+              }
+            }
+          }
+        }
         stage('Lint') {
           steps {
             container('build') {
@@ -72,27 +58,27 @@ pipeline {
       }
     }
 
-    // stage('SAST') {
-    //   steps {
-    //     script {
-    //       def sastParameters = [
-    //         string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
-    //         string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
-    //         string(name: 'git_commit', value: "${GIT_COMMIT}"),
-    //         string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
-    //         string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
-    //         string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
-    //         string(name: 'copy_artifacts_filter', value: 'coverage/**/*')
-    //       ]
-    //
-    //       if (env.CHANGE_ID) {
-    //         sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
-    //       }
-    //
-    //       build(job: 'Angular UI SAST', wait: true, propagate: true, parameters: sastParameters)
-    //     }
-    //   }
-    // }
+    stage('SAST') {
+      steps {
+        script {
+          def sastParameters = [
+            string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+            string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+            string(name: 'git_commit', value: "${GIT_COMMIT}"),
+            string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+            string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
+            string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
+            string(name: 'copy_artifacts_filter', value: 'coverage/**/*')
+          ]
+
+          if (env.CHANGE_ID) {
+            sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
+          }
+
+          build(job: 'Angular UI SAST', wait: true, propagate: true, parameters: sastParameters)
+        }
+      }
+    }
 
     stage('Delivery') {
       steps {
