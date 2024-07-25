@@ -71,7 +71,8 @@ pipeline {
           string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
           string(name: 'git_commit', value: "${GIT_COMMIT}"),
           string(name: 'build_dir', value: 'go-server'),
-          string(name: 'dockerfile', value: 'go-server/Dockerfile')
+          string(name: 'dockerfile', value: 'go-server/Dockerfile'),
+          booleanParam(name: 'enable_buildx', value: true)
         ])
       }
     }
