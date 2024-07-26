@@ -1,19 +1,34 @@
-FROM node:alpine AS build
+ARG ARG_NODE_VERSION=18
+ARG ARG_ALPINE_VERSION=3.18
+
+FROM --platform=$TARGETPLATFORM node:${ARG_NODE_VERSION}-alpine${ARG_ALPINE_VERSION} AS builder
 
 WORKDIR /app
-COPY package*.json angular.json eslint.config.js tsconfig.*.json tsconfig.json /app/
+COPY package*.json .
 RUN npm ci
 
-COPY . /app/
+
+FROM builder AS build
+
+COPY . .
 RUN npm run build
 
 
-FROM node:alpine
+FROM --platform=$TARGETPLATFORM node:${ARG_NODE_VERSION}-alpine${ARG_ALPINE_VERSION}
+
+ARG ARG_NODE_VERSION
+ENV ARG_NODE_VERSION=${ARG_NODE_VERSION}
+ARG ARG_ALPINE_VERSION
+ENV ARG_ALPINE_VERSION=${ARG_ALPINE_VERSION}
+ARG TARGETPLATFORM
+ENV TARGETPLATFORM=${TARGETPLATFORM}
+
+ARG ARG1
+ENV ARG1=${ARG1:-"default ARG1"}
+ARG ARG2
+ENV ARG2=${ARG2:-"default ARG2"}
 
 WORKDIR /app
-COPY --from=build /app /app
-
-EXPOSE 4200
-EXPOSE 8888
-
+USER node
+COPY --chown=node:node --from=build /app /app
 CMD ["npm", "run", "start", "--", "--host", "0.0.0.0"]
