@@ -24,7 +24,7 @@ pipeline {
       steps {
         container('build') {
           dir('angular-ui') {
-            sh 'npm ci && npm run build'
+            sh 'npm ci'
           }
         }
       }
