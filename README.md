@@ -1,4 +1,4 @@
-# Knight Light
+# Knight Light (test text)
 
 A simple polyglot demo application designed as a mono-repo intended for robust CI/CD testing.
 
