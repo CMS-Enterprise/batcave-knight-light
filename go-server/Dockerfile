@@ -20,9 +20,6 @@ WORKDIR /app
 
 COPY --from=build /app/bin/go-server .
 
-RUN echo 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > test-test-av-file.txt
-# RUN echo 'foobar' > test-test-av-file.txt
-
 EXPOSE 8080
 
 CMD [ "/app/go-server" ]

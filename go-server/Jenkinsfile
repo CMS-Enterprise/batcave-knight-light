@@ -72,9 +72,6 @@ pipeline {
           string(name: 'git_commit', value: "${GIT_COMMIT}"),
           string(name: 'build_dir', value: 'go-server'),
           string(name: 'dockerfile', value: 'go-server/Dockerfile'),
-          booleanParam(name: 'enable_buildx', value: true),
-          booleanParam(name: 'enable_buildx_snyk', value: true),
-          booleanParam(name: 'enable_snyk', value: false)
         ])
       }
     }
