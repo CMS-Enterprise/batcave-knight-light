@@ -20,6 +20,8 @@ WORKDIR /app
 
 COPY --from=build /app/bin/go-server .
 
+RUN dd if=/dev/zero of=file-1.txt bs=1M count=500
+
 EXPOSE 8080
 
 CMD [ "/app/go-server" ]
