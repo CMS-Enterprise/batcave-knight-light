@@ -1,5 +1,4 @@
-
-FROM golang:1.22-alpine as build
+FROM golang:1.22-alpine AS build
 
 WORKDIR /app
 
@@ -15,7 +14,7 @@ RUN go build -o /app/bin/ ./...
 
 FROM alpine:latest
 
-ENV KNIGHT_LIGHT_PORT 8080
+ENV KNIGHT_LIGHT_PORT=8080
 
 WORKDIR /app
 
