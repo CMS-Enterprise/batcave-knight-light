@@ -1,0 +1,80 @@
+{
+    "name": "drupal/recommended-project",
+    "description": "Project template for Drupal 9 projects with a relocated document root",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/drupal",
+    "support": {
+        "docs": "https://www.drupal.org/docs/user_guide/en/index.html",
+        "chat": "https://www.drupal.org/node/314178"
+    },
+    "repositories": [
+       {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8",
+            "exclude": [
+                "drupal/oracle",
+                "drupal/form_alter_service"
+            ]
+        },
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "drupal/oracle",
+                "version": "2.x-dev",
+                "type": "drupal-module",
+                "source": {
+                    "url": "https://git.drupalcode.org/issue/oracle-3401083.git",
+                    "type": "git",
+                    "reference": "3401083-drupal-9.5-compatibility"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "drupal/form_alter_service",
+                "version": "3.x-dev",
+                "type": "drupal-module",
+                "source": {
+                    "url": "https://git.drupalcode.org/issue/form_alter_service-3297260.git",
+                    "type": "git",
+                    "reference": "3297260-automated-drupal-10"
+                }
+            }
+        }
+    ],
+    "require": {
+        "php": "~8.3.0",
+        "phpunit/phpunit": "11.2.5",
+        "composer/xdebug-handler": "*",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-libxml": "*",
+        "ext-pdo": "*",
+        "ext-simplexml": "*",
+        "ext-zip": "*",
+        "aws/aws-sdk-php": "^3.276",
+        "dompdf/dompdf": "^2.0",
+        "drush/drush": "^11.4 || ^12.5",
+        "mikehaertl/phpwkhtmltopdf": "~2.1",
+        "npm-asset/datatables": "^1.10",
+        "npm-asset/select2": "^4.0",
+        "palantirnet/drupal-rector": "^0.20.1",
+        "phpoffice/phpspreadsheet": "^1.23 || ^2.0",
+        "reflection/validator": "^1.0"
+    },
+    "conflict": {
+        "drupal/drupal": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "drupal/tokendebug": "1.x-dev",
+        "friendsofphp/php-cs-fixer": "*"
+    }
+}

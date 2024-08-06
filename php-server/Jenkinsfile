@@ -1,0 +1,116 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml """
+            apiVersion: v1
+            kind: Pod
+            spec:
+              restartPolicy: Never
+              containers:
+              - name: build-php
+                image: artifactory.cloud.cms.gov/docker/drupal:10.3.0-php8.3-fpm-alpine3.20
+                command: ['tail', '-f', '/dev/null']
+            """
+        }
+    }
+
+  environment {
+    IMAGE_NAME = 'artifactory.cloud.cms.gov/batcave-docker/ado-repositories/batcave-knight-light/php-server/jenkins/php'
+    IMAGE_TAG = "${GIT_COMMIT[0..7]}"
+  }
+
+    stages {
+        stage('Build PHP') {
+            steps {
+                container('build-php') {
+                    dir('php-server') {
+                        sh 'cat /etc/os-release'
+                        sh 'php -v'
+                        sh 'composer install --no-progress --no-interaction --no-dev --optimize-autoloader --prefer-dist'
+                    }
+                }
+            }
+        }
+
+        stage ('Test') {
+            parallel {
+                stage('Unit Test') {
+                    steps {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            container('build-php') {
+                                dir('php-server') {
+                                    sh 'mkdir -p coverage && vendor/bin/phpunit --log-junit coverage/unitreport.xml tests/'
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Lint') {
+                    steps {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            container('build-php') {
+                                dir('php-server') {
+                                    sh 'vendor/bin/phpstan analyse vendor/palantirnet/drupal-rector/phpstan.neon'
+                                    sh 'vendor/bin/rector -- --dry-run'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('SAST') {
+          steps {
+            script {
+              catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
+              def sastParameters = [
+                string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+                string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+                string(name: 'git_commit', value: "${GIT_COMMIT}"),
+                string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
+              ]
+
+              if (env.CHANGE_ID) {
+                sastParameters.add(string(name: 'git_change_id', value: "${env.CHANGE_ID}"))
+              }
+
+              build(job: 'PHP-Server/PHP-Server-SAST', wait: true, propagate: true, parameters: sastParameters)
+            }
+          }
+        }
+      }
+
+
+        stage('Delivery') {
+            steps {
+                catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
+                    build(job: 'PHP-Server/PHP-Server-Delivery', wait: true, propagate: true, parameters: [
+                        string(name: 'image', value: "${env.IMAGE_NAME}"),
+                        string(name: 'tag', value: "${env.IMAGE_TAG}"),
+                        string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
+                        string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
+                        string(name: 'git_commit', value: "${GIT_COMMIT}"),
+                    ])
+                    container('build-php') {
+                        echo 'Child pipeline completed'
+                    }
+                }
+            }
+        }
+
+        stage('Deployment') {
+            steps {
+                catchError (buildResult: currentBuild.currentResult, stageResult: 'UNSTABLE') {
+                    build(job: 'PHP-Server/PHP-Server-Deployment', wait: true, propagate: true, parameters: [
+                      string(name: 'image', value: "${env.IMAGE_NAME}"),
+                      string(name: 'tag', value: "${env.IMAGE_TAG}")
+                    ])
+                    container('kustomize') {
+                        echo 'Child pipeline completed'
+                    }
+                }
+            }
+        }
+    }
+}
