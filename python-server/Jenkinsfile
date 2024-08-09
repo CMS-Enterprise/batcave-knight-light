@@ -17,6 +17,7 @@ pipeline {
   environment {
     TARGET_DIR = "python-server"
     LINT_ARGS = "--disable=missing-docstring --disable=invalid-name"
+    PIPENV_VERBOSITY= "-1"
   }
 
   options {
@@ -32,9 +33,16 @@ pipeline {
           dir("${TARGET_DIR}") {
             sh '''
             ls -lah
+            # Use an explicit virtual environment
+            python -m venv .venv
+            source .venv/bin/activate
             pipenv install --deploy --ignore-pipfile --dev
+            pip freeze > requirements.txt
             '''
           }
+
+          archiveArtifacts artifacts: 'python-server/.venv/**/*', allowEmptyArchive: true
+          archiveArtifacts artifacts: 'python-server/requirements.txt', allowEmptyArchive: true
         }
       }
     }
@@ -46,6 +54,7 @@ pipeline {
             container('build') {
               dir("${TARGET_DIR}") {
                 sh '''
+                source .venv/bin/activate
                 pipenv run python -m coverage --version
                 pipenv run python -m coverage run -m pytest
                 pipenv run python -m coverage report
@@ -64,8 +73,9 @@ pipeline {
                 dir("${TARGET_DIR}") {
                   sh '''
                   echo "Linting '${TARGET_DIR}' with arguments '${LINT_ARGS}'"
+                  source .venv/bin/activate
                   pipenv run python -m pylint --version
-                  find . -type f -iname "*.py" | grep -vE ".cache" | xargs pipenv run python -m pylint ${LINT_ARGS}
+                  pipenv run python -m pylint ${LINT_ARGS} src
                   '''
                 }
               }
@@ -78,6 +88,7 @@ pipeline {
    stage('SAST') {
      steps {
        script {
+         def pythonpath = 'python-server/.venv/lib64/python3.12/site-packages:python-server/.venv/lib/python3.12/site-packages'
          def sastParameters = [
            string(name: 'git_repository', value: "${scm.userRemoteConfigs[0].url}"),
            string(name: 'git_credentials', value: "${scm.userRemoteConfigs[0].credentialsId}"),
@@ -85,7 +96,9 @@ pipeline {
            string(name: 'git_branch', value: "${env.GIT_BRANCH}"),
            string(name: 'copy_artifacts_job_name', value: "${env.JOB_NAME}"),
            string(name: 'copy_artifacts_build_number', value: "${env.BUILD_NUMBER}"),
-           string(name: 'copy_artifacts_filter', value: 'coverage.xml')
+           string(name: 'copy_artifacts_filter', value: 'coverage.xml,python-server/.venv/**/*,python-server/requirements.txt'),
+           string(name: 'snyk_additional_env', value: "[ \"PYTHONPATH=${pythonpath}\" ]"),
+           string(name: 'package_file', value: 'python-server/requirements.txt')
          ]
 
          if (env.CHANGE_ID) {
