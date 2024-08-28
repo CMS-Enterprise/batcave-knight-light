@@ -26,7 +26,7 @@ COPY --from=build /app/bin/go-server .
 
 EXPOSE 8080
 
-RUN chown -R myuser:mygroup /app
+RUN chown -R app:app /app
 
 USER app
 
