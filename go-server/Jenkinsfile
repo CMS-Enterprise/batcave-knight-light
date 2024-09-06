@@ -72,6 +72,7 @@ pipeline {
           string(name: 'git_commit', value: "${GIT_COMMIT}"),
           string(name: 'build_dir', value: 'go-server'),
           string(name: 'dockerfile', value: 'go-server/Dockerfile'),
+          booleanParam(name: 'clamscan_oci_tar', value: true)
         ])
       }
     }
